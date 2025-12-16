@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: biodiversity-maplibre-config
+data:
+  config.template.json: |
+    {
+        "mcp_server_url": "${MCP_SERVER_URL}",
+        "llm_model": "kimi",
+        "llm_models": [
+            {
+                "value": "glm-4.6",
+                "label": "GLM-4.6",
+                "endpoint": "${LLM_ENDPOINT}",
+                "api_key": "${PROXY_KEY}"
+            },
+            {
+                "value": "cirrus",
+                "label": "Nemotron3-nano",
+                "endpoint": "https://vllm-cirrus.carlboettiger.info/v1",
+                "api_key": "${NIMBUS_API_KEY}"
+            },
+            {
+                "value": "qwen3",
+                "label": "Qwen3",
+                "endpoint": "${LLM_ENDPOINT}",
+                "api_key": "${PROXY_KEY}"
+            },
+            {
+                "value": "kimi",
+                "label": "Kimi",
+                "endpoint": "${LLM_ENDPOINT}",
+                "api_key": "${PROXY_KEY}"
+            }
+        ]
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: biodiversity-maplibre-nginx
+data:
+  nginx.conf: |
+    server {
+        listen 80;
+        server_name _;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Enable CORS for API calls from the browser
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept";
+        
+        # Serve static files - NO caching for dev environment
+        location / {
+            try_files $uri $uri/ /index.html;
+            # Disable all caching for development
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+        }
+
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
