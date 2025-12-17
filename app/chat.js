@@ -11,6 +11,10 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 
+// Import generic map control modules
+import { layerRegistry } from './layer-registry.js';
+import { MCPToolFactory } from './mcp-tool-factory.js';
+
 class WetlandsChatbot {
     constructor(config) {
         this.config = config;
@@ -26,231 +30,53 @@ class WetlandsChatbot {
         this.maxReconnectAttempts = 3; // Maximum reconnection attempts
         this.healthCheckInterval = null; // For periodic health checks
 
-        // Define local tools for map control (executed in browser, not via MCP)
-        this.localTools = this.defineLocalTools();
+        // Initialize layer registry and tools (will be loaded after map is ready)
+        this.toolFactory = null;
+        this.localTools = [];
 
         this.initializeUI();
         this.loadSystemPrompt();
+        this.loadLayersAndInitTools();
         this.initMCP();
         this.startHealthCheck(); // Start monitoring connection health
     }
 
-    // Define local tools for controlling the map
-    defineLocalTools() {
-        return [
-            {
-                name: 'toggle_map_layer',
-                description: 'Toggle visibility of map overlay layers. Use this to show or hide data layers on the map such as wetlands, carbon, protected areas, etc. Available layers: "wetlands" (Global Wetlands/GLWD), "carbon" (Vulnerable Carbon), "ncp" (Nature\'s Contributions to People), "ramsar" (Ramsar Wetland Sites), "wdpa" (Protected Areas/WDPA), "hydrobasins" (Watersheds/HydroBASINS).',
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The layer to control. One of: "wetlands", "carbon", "ncp", "ramsar", "wdpa", "hydrobasins"',
-                            enum: ['wetlands', 'carbon', 'ncp', 'ramsar', 'wdpa', 'hydrobasins']
-                        },
-                        action: {
-                            type: 'string',
-                            description: 'The action to perform: "show" to make visible, "hide" to make invisible, "toggle" to switch current state',
-                            enum: ['show', 'hide', 'toggle']
+    // Load layer configuration and initialize tool factory
+    async loadLayersAndInitTools() {
+        try {
+            // Load layer configuration from JSON
+            await layerRegistry.loadFromJson('layers-config.json');
+            console.log('✓ Layer registry loaded:', layerRegistry.getSummary());
+
+            // Wait for MapController to be available (set up in map.js)
+            const waitForMapController = () => {
+                return new Promise((resolve) => {
+                    const checkInterval = setInterval(() => {
+                        if (window.MapController) {
+                            clearInterval(checkInterval);
+                            resolve();
                         }
-                    },
-                    required: ['layer', 'action']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
+                    }, 100);
+                });
+            };
 
-                    let result;
-                    if (args.action === 'toggle') {
-                        result = window.MapController.toggleLayer(args.layer);
-                    } else {
-                        const visible = args.action === 'show';
-                        result = window.MapController.setLayerVisibility(args.layer, visible);
-                    }
+            await waitForMapController();
 
-                    return JSON.stringify(result);
-                }
-            },
-            {
-                name: 'get_map_layers',
-                description: 'Get a list of all available map layers and their current visibility status. Use this to check what layers exist and which are currently shown.',
-                inputSchema: {
-                    type: 'object',
-                    properties: {},
-                    required: []
-                },
-                execute: () => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const layers = window.MapController.getAvailableLayers();
-                    return JSON.stringify({ success: true, layers: layers });
-                }
-            },
-            {
-                name: 'filter_map_layer',
-                description: `Apply a filter to a vector map layer to show only features matching certain criteria. Only works on vector layers: "wdpa" (Protected Areas), "ramsar" (Ramsar Sites), "hydrobasins" (Watersheds).
+            // Create tool factory with layer registry and map controller
+            this.toolFactory = new MCPToolFactory(layerRegistry, window.MapController);
 
-The filter must be a valid MapLibre filter expression array. Common patterns:
-- Equality: ["==", "property_name", "value"]
-- Not equal: ["!=", "property_name", "value"]  
-- In list: ["in", "property_name", "val1", "val2", "val3"]
-- Comparison: [">=", "property_name", 1000] or ["<", "property_name", 500]
-- AND: ["all", ["==", "prop1", "val1"], ["==", "prop2", true]]
-- OR: ["any", ["==", "prop1", "val1"], ["==", "prop1", "val2"]]
-
-WDPA layer properties: IUCN_CAT (Ia, Ib, II, III, IV, V, VI), ISO3, DESIG_ENG, STATUS, STATUS_YR, GIS_AREA, NAME_ENG
-Ramsar layer properties: officialna, iso3, country_en, area_off, Criterion1-Criterion9 (boolean)
-HydroBASINS properties: PFAF_ID, UP_AREA, SUB_AREA, MAIN_BAS`,
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The vector layer to filter. One of: "wdpa", "ramsar", "hydrobasins"',
-                            enum: ['wdpa', 'ramsar', 'hydrobasins']
-                        },
-                        filter: {
-                            type: 'array',
-                            description: 'MapLibre filter expression array. Examples: ["==", "IUCN_CAT", "II"], ["in", "IUCN_CAT", "Ia", "Ib", "II"], ["all", ["==", "Criterion1", true], ["==", "Criterion2", true]]'
-                        }
-                    },
-                    required: ['layer', 'filter']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const result = window.MapController.setLayerFilter(args.layer, args.filter);
-                    return JSON.stringify(result);
-                }
-            },
-            {
-                name: 'clear_map_filter',
-                description: 'Remove any active filter from a vector map layer, showing all features again. Use this to reset a layer after filtering.',
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The vector layer to clear filter from. One of: "wdpa", "ramsar", "hydrobasins"',
-                            enum: ['wdpa', 'ramsar', 'hydrobasins']
-                        }
-                    },
-                    required: ['layer']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const result = window.MapController.clearLayerFilter(args.layer);
-                    return JSON.stringify(result);
-                }
-            },
-            {
-                name: 'get_layer_filter_info',
-                description: 'Get information about what properties can be filtered on a vector layer, and the current active filter if any. Use this to understand what filter options are available.',
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The vector layer to get filter info for. One of: "wdpa", "ramsar", "hydrobasins"',
-                            enum: ['wdpa', 'ramsar', 'hydrobasins']
-                        }
-                    },
-                    required: ['layer']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const propsResult = window.MapController.getFilterableProperties(args.layer);
-                    const filterResult = window.MapController.getLayerFilter(args.layer);
-                    return JSON.stringify({
-                        success: true,
-                        layer: args.layer,
-                        filterableProperties: propsResult.properties,
-                        currentFilter: filterResult.filter,
-                        currentFilterDescription: filterResult.description
-                    });
-                }
-            },
-            {
-                name: 'set_layer_paint',
-                description: `Set paint properties on a vector map layer to color features based on data attributes. Only works on vector layers: "wdpa" (Protected Areas), "ramsar" (Ramsar Sites), "hydrobasins" (Watersheds).
-
-Use this to create data-driven styling, such as coloring polygons by category. The paint property must be a valid MapLibre paint expression.
-
-Common patterns for fill-color:
-- Categorical (match): ["match", ["get", "property_name"], "value1", "#color1", "value2", "#color2", "#defaultColor"]
-- Stepped (ranges): ["step", ["get", "property_name"], "#color1", threshold1, "#color2", threshold2, "#color3"]
-- Interpolated: ["interpolate", ["linear"], ["get", "property_name"], min, "#minColor", max, "#maxColor"]
-
-WDPA useful properties for coloring: OWN_TYPE (ownership), IUCN_CAT (IUCN category), GOV_TYPE (governance), DESIG_TYPE (designation type)
-Ramsar useful properties: ramsarid (unique site ID), Site name (site name), iso3/Country (country), Region (geographic region), Wetland Type (wetland classification), Criterion1-Criterion9 (boolean criteria), Montreux listed (conservation status), Management plan implemented (management status)
-HydroBASINS useful properties: SUB_AREA (basin size), UP_AREA (upstream area)
-
-Example: Color WDPA by ownership type:
-  property: "fill-color"
-  value: ["match", ["get", "OWN_TYPE"], "State", "#1f77b4", "Private", "#ff7f0e", "Community", "#2ca02c", "Joint", "#d62728", "#999999"]
-
-IMPORTANT: When explaining colors to users, display them as visual legend boxes using HTML:
-<span style="background-color: #colorhex; padding: 4px 12px; border-radius: 3px; color: white; font-weight: bold;">color name</span>
-Example: "State-owned areas are <span style="background-color: #1f77b4; padding: 4px 12px; border-radius: 3px; color: white; font-weight: bold;">blue</span>, Private areas are <span style="background-color: #ff7f0e; padding: 4px 12px; border-radius: 3px; color: white; font-weight: bold;">orange</span>"`,
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The vector layer to style. One of: "wdpa", "ramsar", "hydrobasins"',
-                            enum: ['wdpa', 'ramsar', 'hydrobasins']
-                        },
-                        property: {
-                            type: 'string',
-                            description: 'The paint property to set. Common values: "fill-color", "fill-opacity", "line-color", "line-width"',
-                            enum: ['fill-color', 'fill-opacity', 'line-color', 'line-width']
-                        },
-                        value: {
-                            description: 'The paint value - either a static value (string/number) or a MapLibre expression array for data-driven styling'
-                        }
-                    },
-                    required: ['layer', 'property', 'value']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const result = window.MapController.setLayerPaint(args.layer, args.property, args.value);
-                    return JSON.stringify(result);
-                }
-            },
-            {
-                name: 'reset_layer_paint',
-                description: 'Reset the paint styling of a vector layer back to its default appearance. Use this to undo any custom coloring applied with set_layer_paint.',
-                inputSchema: {
-                    type: 'object',
-                    properties: {
-                        layer: {
-                            type: 'string',
-                            description: 'The vector layer to reset. One of: "wdpa", "ramsar", "hydrobasins"',
-                            enum: ['wdpa', 'ramsar', 'hydrobasins']
-                        }
-                    },
-                    required: ['layer']
-                },
-                execute: (args) => {
-                    if (!window.MapController) {
-                        return JSON.stringify({ success: false, error: 'Map controller not available' });
-                    }
-                    const result = window.MapController.resetLayerPaint(args.layer);
-                    return JSON.stringify(result);
-                }
-            }
-        ];
+            // Generate tools dynamically from layer metadata
+            this.localTools = this.toolFactory.generateTools();
+            console.log('✓ Generated', this.localTools.length, 'map control tools:',
+                this.localTools.map(t => t.name).join(', '));
+        } catch (error) {
+            console.error('Failed to load layer configuration:', error);
+            // Fall back to empty tools
+            this.localTools = [];
+        }
     }
+
+
 
     // Check if a tool is a local tool (executed in browser)
     isLocalTool(toolName) {

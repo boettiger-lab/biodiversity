@@ -1,10 +1,18 @@
+// Import generic map control modules
+import { layerRegistry } from './layer-registry.js';
+import { MapLayerController } from './map-layer-controller.js';
+
 // Register PMTiles protocol
 let protocol = new pmtiles.Protocol();
 maplibregl.addProtocol('pmtiles', protocol.tile);
 
-// MapController: API for chatbot to control the map
+// Initialize generic map controller after layers are loaded
+let genericMapController = null;
+
+// MapController: API for chatbot to control the map (legacy compatibility wrapper)
+// This wraps the new generic MapLayerController for backward compatibility
 window.MapController = {
-    // Available layers with their display names and associated map layer IDs
+    // Legacy layers object (will be populated from LayerRegistry)
     layers: {
         'wetlands': {
             displayName: 'Global Wetlands (GLWD)',
@@ -1155,5 +1163,39 @@ legendToggle.addEventListener('click', function () {
         legendToggle.textContent = '+';
     } else {
         legendToggle.textContent = '−';
+    }
+});
+
+// Initialize generic map controller after map is fully loaded
+map.on('load', async function () {
+    try {
+        // Load layer configuration if not already loaded
+        if (layerRegistry.getKeys().length === 0) {
+            await layerRegistry.loadFromJson('layers-config.json');
+            console.log('✓ Layer registry loaded in map.js:', layerRegistry.getSummary());
+        }
+
+        // Create generic map controller
+        genericMapController = new MapLayerController(window.map, layerRegistry);
+
+        // Update legacy MapController to delegate to generic controller
+        // This provides backward compatibility
+        window.MapController.getAvailableLayers = () => genericMapController.getAvailableLayers();
+        window.MapController.setLayerVisibility = (k, v) => genericMapController.setLayerVisibility(k, v);
+        window.MapController.toggleLayer = (k) => genericMapController.toggleLayer(k);
+        window.MapController.showOnlyLayers = (ks) => genericMapController.showOnlyLayers(ks);
+        window.MapController.hideAllLayers = () => genericMapController.hideAllLayers();
+        window.MapController.showAllLayers = () => genericMapController.showAllLayers();
+        window.MapController.getFilterableProperties = (k) => genericMapController.getFilterableProperties(k);
+        window.MapController.setLayerFilter = (k, f) => genericMapController.setLayerFilter(k, f);
+        window.MapController.clearLayerFilter = (k) => genericMapController.clearLayerFilter(k);
+        window.MapController.getLayerFilter = (k) => genericMapController.getLayerFilter(k);
+        window.MapController.setLayerPaint = (k, p, v) => genericMapController.setLayerPaint(k, p, v);
+        window.MapController.resetLayerPaint = (k) => genericMapController.resetLayerPaint(k);
+        window.MapController.describeFilter = (f) => genericMapController.describeFilter(f);
+
+        console.log('✓ Generic map controller initialized and integrated');
+    } catch (error) {
+        console.error('Failed to initialize generic map controller:', error);
     }
 });
