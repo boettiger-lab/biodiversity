@@ -1,5 +1,5 @@
-// Wetlands Data Chatbot
-// Uses an OpenAI-compatible LLM with MCP server access for querying wetlands data
+// Biodiversity Data Chatbot
+// Uses an OpenAI-compatible LLM with MCP server access for querying biodiversity data
 //
 // Debugging & Error Handling:
 // - Enhanced logging for MCP query results and empty responses
@@ -15,7 +15,7 @@ import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { layerRegistry } from './layer-registry.js';
 import { MCPToolFactory } from './mcp-tool-factory.js';
 
-class WetlandsChatbot {
+class BiodiversityChatbot {
     constructor(config) {
         this.config = config;
         this.mcpServerUrl = config.mcp_server_url;
@@ -117,7 +117,7 @@ class WetlandsChatbot {
             console.log('✓ System prompt loaded');
         } catch (error) {
             console.error('Failed to load system prompt:', error);
-            this.systemPrompt = 'You are a helpful assistant for wetlands data analysis.';
+            this.systemPrompt = 'You are a helpful assistant for biodiversity data analysis.';
         }
     }
 
@@ -130,7 +130,7 @@ class WetlandsChatbot {
 
             // Create MCP client
             this.mcpClient = new Client({
-                name: 'wetlands-chatbot',
+                name: 'biodiversity-chatbot',
                 version: '1.0.0'
             }, {
                 capabilities: {}
@@ -242,12 +242,12 @@ class WetlandsChatbot {
 
         container.innerHTML = `
             <div id="chat-header">
-                <h3>🦆 Wetlands Data Assistant</h3>
+                <h3>🌍 Biodiversity Data Assistant</h3>
                 <button id="chat-toggle">−</button>
             </div>
             <div id="chat-messages"></div>
             <div id="chat-input-container">
-                <input type="text" id="chat-input" placeholder="Ask about wetlands data..." />
+                <input type="text" id="chat-input" placeholder="Ask about biodiversity data..." />
                 <button id="chat-send">Send</button>
             </div>
             <div id="chat-footer">
@@ -275,11 +275,11 @@ class WetlandsChatbot {
         // Welcome message
         this.addMessage(
             'assistant',
-            'Hi! I can help you explore global wetlands data and control the map. Try asking:\n\n' +
-            '* "How many hectares of peatlands are there?"\n' +
-            '* "Calculate vulnerable carbon stored in different wetlands of India?"\n' +
+            'Hi! I can help you explore global biodiversity data and control the map. Try asking:\n\n' +
+            '* "How much protected area is in India?"\n' +
+            '* "Calculate vulnerable carbon stored in IUCN category Ia areas"\n' +
             '* "Show state-owned protected areas colored by IUCN category"\n' +
-            '* "Filter Ramsar sites to those meeting Criterion 1 and 2"'
+            '* "Show only IUCN category II protected areas"'
         );
     }
 
@@ -541,12 +541,12 @@ class WetlandsChatbot {
 
         // Count queries
         if (lower.includes('count(')) {
-            if (lower.includes('ramsar')) return 'Counting Ramsar wetland sites';
+            if (lower.includes('species')) return 'Analyzing species data';
             if (lower.includes('wdpa')) return 'Counting protected areas';
             if (lower.includes('peatland') || (lower.includes('z between') && lower.includes('22'))) {
                 return 'Calculating total peatland area';
             }
-            if (lower.includes('wetland')) return 'Counting wetlands by type';
+            if (lower.includes('protected')) return 'Counting protected areas';
             return 'Counting matching records';
         }
 
@@ -562,10 +562,9 @@ class WetlandsChatbot {
 
         // Geographic filters
         let desc = 'Querying ';
-        if (lower.includes('ramsar')) desc += 'Ramsar sites';
-        else if (lower.includes('wdpa')) desc += 'protected areas';
-        else if (lower.includes('hydrobasin')) desc += 'watershed data';
-        else if (lower.includes('wetland')) desc += 'wetlands';
+        if (lower.includes('protected')) desc += 'protected areas';
+        else if (lower.includes('wdpa')) desc += 'WDPA sites';
+        else if (lower.includes('area')) desc += 'areas';
         else desc += 'data';
 
         // Add geographic context
@@ -1127,8 +1126,8 @@ function initializeChatbot() {
         .then(response => response.json())
         .then(config => {
             console.log('Config loaded successfully');
-            chatbot = new WetlandsChatbot(config);
-            console.log('Wetlands chatbot initialized');
+            chatbot = new BiodiversityChatbot(config);
+            console.log('Biodiversity chatbot initialized');
 
             // Clean up on page unload
             window.addEventListener('beforeunload', () => {

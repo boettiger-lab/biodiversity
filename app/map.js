@@ -14,13 +14,6 @@ let genericMapController = null;
 window.MapController = {
     // Legacy layers object (will be populated from LayerRegistry)
     layers: {
-        'wetlands': {
-            displayName: 'Global Wetlands (GLWD)',
-            layerIds: ['wetlands-layer'],
-            checkboxId: 'wetlands-layer',
-            hasLegend: true,
-            isVector: false
-        },
         'ncp': {
             displayName: "Nature's Contributions to People",
             layerIds: ['ncp-layer'],
@@ -34,55 +27,6 @@ window.MapController = {
             checkboxId: 'carbon-layer',
             hasLegend: false,
             isVector: false
-        },
-        'ramsar': {
-            displayName: 'Ramsar Wetland Sites',
-            layerIds: ['ramsar-layer', 'ramsar-outline'],
-            checkboxId: 'ramsar-layer',
-            hasLegend: false,
-            isVector: true,
-            sourceLayer: 'ramsar',
-            // Properties available for filtering (from PMTiles)
-            filterableProperties: {
-                'ramsarid': { type: 'number', description: 'Unique Ramsar site ID' },
-                'Site name': { type: 'string', description: 'Official site name' },
-                'officialna': { type: 'string', description: 'Official site name (legacy field)' },
-                'Region': { type: 'string', description: 'Geographic region' },
-                'Country': { type: 'string', description: 'Country name' },
-                'Territory': { type: 'string', description: 'Territory name' },
-                'iso3': { type: 'string', description: 'ISO 3-letter country code' },
-                'country_en': { type: 'string', description: 'Country name in English' },
-                'Designation date': { type: 'string', description: 'Date of Ramsar designation' },
-                'Last publication date': { type: 'string', description: 'Last update date' },
-                'Area (ha)': { type: 'number', description: 'Area in hectares' },
-                'area_off': { type: 'number', description: 'Official area in hectares (legacy field)' },
-                'Latitude': { type: 'number', description: 'Latitude coordinate' },
-                'Longitude': { type: 'number', description: 'Longitude coordinate' },
-                'Annotated summary': { type: 'string', description: 'Site description' },
-                'Criterion1': { type: 'boolean', description: 'Criterion 1: Representative/rare wetland type' },
-                'Criterion2': { type: 'boolean', description: 'Criterion 2: Supports vulnerable species' },
-                'Criterion3': { type: 'boolean', description: 'Criterion 3: Maintains biodiversity' },
-                'Criterion4': { type: 'boolean', description: 'Criterion 4: Supports critical life stages' },
-                'Criterion5': { type: 'boolean', description: 'Criterion 5: Supports 20,000+ waterbirds' },
-                'Criterion6': { type: 'boolean', description: 'Criterion 6: Supports 1% of waterbird population' },
-                'Criterion7': { type: 'boolean', description: 'Criterion 7: Supports indigenous fish' },
-                'Criterion8': { type: 'boolean', description: 'Criterion 8: Fish spawning/nursery' },
-                'Criterion9': { type: 'boolean', description: 'Criterion 9: Supports 1% of non-avian species' },
-                'Wetland Type': { type: 'string', description: 'Type of wetland ecosystem' },
-                'Maximum elevation': { type: 'number', description: 'Maximum elevation in meters' },
-                'Minimum elevation': { type: 'number', description: 'Minimum elevation in meters' },
-                'Montreux listed': { type: 'boolean', description: 'Whether site is on Montreux Record' },
-                'Management plan implemented': { type: 'boolean', description: 'Management plan status' },
-                'Management plan available': { type: 'boolean', description: 'Management plan availability' },
-                'Ecosystem services': { type: 'string', description: 'Description of ecosystem services' },
-                'Threats': { type: 'string', description: 'Documented threats to site' },
-                'large administrative region': { type: 'string', description: 'Large administrative region' },
-                'Global international legal designations': { type: 'string', description: 'Global legal designations' },
-                'Regional international legal designations': { type: 'string', description: 'Regional legal designations' },
-                'National conservation designation': { type: 'string', description: 'National conservation status' },
-                'Does the wetland extend onto the territory of one or more other countries?': { type: 'boolean', description: 'Transboundary status' },
-                'Ramsar Advisory Mission?': { type: 'boolean', description: 'Whether advisory mission conducted' }
-            }
         },
         'wdpa': {
             displayName: 'Protected Areas (WDPA)',
@@ -110,21 +54,6 @@ window.MapController = {
                 'REP_AREA': { type: 'number', description: 'Reported area in km²' },
                 'MARINE': { type: 'string', description: 'Marine designation (0, 1, 2)' },
                 'NO_TAKE': { type: 'string', description: 'No-take zone status' }
-            }
-        },
-        'hydrobasins': {
-            displayName: 'Watersheds (HydroBASINS L6)',
-            layerIds: ['hydrobasins-fill', 'hydrobasins-layer'],
-            checkboxId: 'hydrobasins-layer',
-            hasLegend: false,
-            isVector: true,
-            sourceLayer: 'hydrobasins_level_06',
-            filterableProperties: {
-                'HYBAS_ID': { type: 'number', description: 'Unique basin identifier' },
-                'PFAF_ID': { type: 'number', description: 'Pfafstetter hierarchical code' },
-                'UP_AREA': { type: 'number', description: 'Upstream drainage area in km²' },
-                'SUB_AREA': { type: 'number', description: 'Sub-basin area in km²' },
-                'MAIN_BAS': { type: 'number', description: 'Main basin ID' }
             }
         }
     },
@@ -173,7 +102,7 @@ window.MapController = {
                 checkbox.checked = visible;
             }
 
-            // Handle legend visibility for wetlands layer
+            // Handle legend visibility
             if (config.hasLegend) {
                 const legend = document.getElementById('legend');
                 if (legend) {
@@ -263,7 +192,7 @@ window.MapController = {
             return { success: false, error: `Unknown layer: ${layerKey}. Available layers: ${Object.keys(this.layers).join(', ')}` };
         }
         if (!config.isVector) {
-            return { success: false, error: `Layer '${layerKey}' is a raster layer and does not support filtering. Only vector layers (ramsar, wdpa, hydrobasins) can be filtered.` };
+            return { success: false, error: `Layer '${layerKey}' is a raster layer and does not support filtering. Only vector layers (wdpa) can be filtered.` };
         }
 
         if (!window.map || !window.map.getLayer) {
@@ -416,18 +345,6 @@ window.MapController = {
             'fill-opacity': 0.5,
             'line-color': '#1B5E20',
             'line-width': 1.5
-        },
-        'ramsar': {
-            'fill-color': '#0288D1',
-            'fill-opacity': 0.4,
-            'line-color': '#01579B',
-            'line-width': 1.5
-        },
-        'hydrobasins': {
-            'fill-color': 'transparent',
-            'fill-opacity': 0.2,
-            'line-color': '#1565C0',
-            'line-width': 1
         }
     },
 
@@ -438,7 +355,7 @@ window.MapController = {
             return { success: false, error: `Unknown layer: ${layerKey}. Available layers: ${Object.keys(this.layers).join(', ')}` };
         }
         if (!config.isVector) {
-            return { success: false, error: `Layer '${layerKey}' is a raster layer and does not support paint styling. Only vector layers (ramsar, wdpa, hydrobasins) can be styled.` };
+            return { success: false, error: `Layer '${layerKey}' is a raster layer and does not support paint styling. Only vector layers (wdpa) can be styled.` };
         }
 
         if (!window.map || !window.map.getLayer) {
@@ -569,216 +486,97 @@ map.on('styleimagemissing', function (e) {
     console.warn('Style image missing:', e.id);
 });
 
-map.on('sourcedata', function (e) {
-    if (e.sourceId === 'wetlands-cog' && e.isSourceLoaded) {
-        console.log('Wetlands source loaded');
-    }
-});
-
 // Store style URLs
 const darkStyleUrl = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 const datavizStyleUrl = 'https://api.maptiler.com/maps/dataviz-v4/style.json?key=0Vzl9yHwu0Xyx4TwT2Iw';
 
-// Load wetland colormap and initialize map
-let wetlandColormap;
-let wetlandColormapData;
+// Wait for map to load before adding layers
+map.on('load', function () {
+    console.log('Map loaded, adding layers...');
 
-const colormapPromise = fetch('wetland-colormap.json')
-    .then(response => {
-        console.log('Colormap fetch response:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Colormap data loaded:', Object.keys(data).length, 'classes');
-        wetlandColormapData = data;
-        // Extract just the color arrays for the tile service
-        const colorArrays = {};
-        for (const [key, value] of Object.entries(data)) {
-            colorArrays[key] = value.color;
-        }
-        wetlandColormap = encodeURIComponent(JSON.stringify(colorArrays));
-        console.log('Colormap encoded, length:', wetlandColormap.length);
-        return wetlandColormap;
-    })
-    .catch(error => {
-        console.error('Error loading colormap:', error);
-        throw error;
+    // Add NCP biodiversity layer
+    map.addSource('ncp-cog', {
+        'type': 'raster',
+        'tiles': [
+            'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-ncp/NCP_biod_nathab_cog.tif&rescale=0,19&colormap_name=viridis'
+        ],
+        'tileSize': 256,
+        'minzoom': 0,
+        'maxzoom': 12,
+        'attribution': '<a href="https://doi.org/10.1038/s41467-023-43832-9" target="_blank">Nature\'s Contributions to People</a>'
     });
 
-// Wait for both map and colormap to load before adding wetlands layer
-map.on('load', function () {
-    console.log('Map loaded, waiting for colormap...');
-    colormapPromise.then(() => {
-        console.log('Colormap ready, adding wetlands layer...');
-        map.addSource('wetlands-cog', {
-            'type': 'raster',
-            'tiles': [
-                `https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-wetlands/GLWD_v2_0/GLWD_v2_0_combined_classes/GLWD_v2_0_main_class.tif&colormap=${wetlandColormap}`
-            ],
-            'tileSize': 256,
-            'minzoom': 0,
-            'maxzoom': 12,
-            'attribution': '<a href="https://data.hydrosheds.org/file/hydrobasins/GLWD_TechDoc_v2_0.pdf" target="_blank">GLWD v2.0</a>'
-        });
+    map.addLayer({
+        'id': 'ncp-layer',
+        'type': 'raster',
+        'source': 'ncp-cog',
+        'paint': {
+            'raster-opacity': 0.7
+        },
+        'layout': {
+            'visibility': 'none'
+        }
+    });
 
-        map.addLayer({
-            'id': 'wetlands-layer',
-            'type': 'raster',
-            'source': 'wetlands-cog',
-            'paint': {
-                'raster-opacity': 0.7
-            }
-        });
+    console.log('NCP layer added successfully');
 
-        console.log('Wetlands layer added successfully');
+    // Add vulnerable carbon layer
+    map.addSource('carbon-cog', {
+        'type': 'raster',
+        'tiles': [
+            'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
+        ],
+        'tileSize': 256,
+        'minzoom': 0,
+        'maxzoom': 12,
+        'attribution': '<a href="https://www.conservation.org/irrecoverable-carbon" target="_blank">Irrecoverable Carbon (CI 2018)</a>'
+    });
 
-        // Add NCP biodiversity layer
-        map.addSource('ncp-cog', {
-            'type': 'raster',
-            'tiles': [
-                'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-ncp/NCP_biod_nathab_cog.tif&rescale=0,19&colormap_name=viridis'
-            ],
-            'tileSize': 256,
-            'minzoom': 0,
-            'maxzoom': 12,
-            'attribution': '<a href="https://doi.org/10.1038/s41467-023-43832-9" target="_blank">Nature\'s Contributions to People</a>'
-        });
+    map.addLayer({
+        'id': 'carbon-layer',
+        'type': 'raster',
+        'source': 'carbon-cog',
+        'paint': {
+            'raster-opacity': 0.7
+        },
+        'layout': {
+            'visibility': 'none'
+        }
+    });
 
-        map.addLayer({
-            'id': 'ncp-layer',
-            'type': 'raster',
-            'source': 'ncp-cog',
-            'paint': {
-                'raster-opacity': 0.7
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
+    console.log('Carbon layer added successfully');
 
-        console.log('NCP layer added successfully');
+    // Add WDPA protected areas PMTiles layer
+    map.addSource('wdpa-source', {
+        'type': 'vector',
+        'url': 'pmtiles://https://s3-west.nrp-nautilus.io/public-wdpa/WDPA_Dec2025.pmtiles',
+        'attribution': '<a href="https://www.protectedplanet.net/" target="_blank">World Database on Protected Areas</a>'
+    });
 
-        // Add vulnerable carbon layer
-        map.addSource('carbon-cog', {
-            'type': 'raster',
-            'tiles': [
-                'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
-            ],
-            'tileSize': 256,
-            'minzoom': 0,
-            'maxzoom': 12,
-            'attribution': '<a href="https://www.conservation.org/irrecoverable-carbon" target="_blank">Irrecoverable Carbon (CI 2018)</a>'
-        });
+    map.addLayer({
+        'id': 'wdpa-layer',
+        'type': 'fill',
+        'source': 'wdpa-source',
+        'source-layer': 'wdpa',
+        'minzoom': 0,
+        'maxzoom': 22,
+        'paint': {
+            'fill-color': '#2E7D32',
+            'fill-opacity': 0.5
+        },
+        'layout': {
+            'visibility': 'none'
+        }
+    });
 
-        map.addLayer({
-            'id': 'carbon-layer',
-            'type': 'raster',
-            'source': 'carbon-cog',
-            'paint': {
-                'raster-opacity': 0.7
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
+    // Add click popup for WDPA sites
+    map.on('click', 'wdpa-layer', (e) => {
+        const coordinates = e.lngLat;
+        const properties = e.features[0].properties;
 
-        console.log('Carbon layer added successfully');
-
-        // Add Ramsar sites PMTiles layer
-        map.addSource('ramsar-source', {
-            'type': 'vector',
-            'url': 'pmtiles://https://minio.carlboettiger.info/public-wetlands/ramsar/ramsar_wetlands.pmtiles',
-            'attribution': '<a href="https://rsis.ramsar.org/" target="_blank">Ramsar Sites Information Service</a>'
-        });
-
-        map.addLayer({
-            'id': 'ramsar-layer',
-            'type': 'fill',
-            'source': 'ramsar-source',
-            'source-layer': 'ramsar',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'fill-color': '#FF1493',
-                'fill-opacity': 0.6
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
-
-        map.addLayer({
-            'id': 'ramsar-outline',
-            'type': 'line',
-            'source': 'ramsar-source',
-            'source-layer': 'ramsar',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'line-color': '#8B008B',
-                'line-width': 2
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
-
-        // Add click popup for Ramsar sites
-        map.on('click', 'ramsar-layer', (e) => {
-            const coordinates = e.lngLat;
-            const properties = e.features[0].properties;
-
-            new maplibregl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`
-                    <strong>${properties["Site name"] || 'Ramsar Site'}</strong><br>
-                    ${properties.ramsarid ? 'ID: ' + properties.ramsarid + '<br>' : ''}
-                    ${properties["Area (ha)"] ? 'Area: ' + properties["Area (ha)"] + ' ha<br>' : ''}
-                `)
-                .addTo(map);
-        });
-
-        // Change cursor on hover
-        map.on('mouseenter', 'ramsar-layer', () => {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'ramsar-layer', () => {
-            map.getCanvas().style.cursor = '';
-        });
-
-        console.log('Ramsar layer added successfully');
-
-        // Add WDPA protected areas PMTiles layer
-        map.addSource('wdpa-source', {
-            'type': 'vector',
-            'url': 'pmtiles://https://s3-west.nrp-nautilus.io/public-wdpa/WDPA_Dec2025.pmtiles',
-            'attribution': '<a href="https://www.protectedplanet.net/" target="_blank">World Database on Protected Areas</a>'
-        });
-
-        map.addLayer({
-            'id': 'wdpa-layer',
-            'type': 'fill',
-            'source': 'wdpa-source',
-            'source-layer': 'wdpa',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'fill-color': '#2E7D32',
-                'fill-opacity': 0.5
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
-
-        // Add click popup for WDPA sites
-        map.on('click', 'wdpa-layer', (e) => {
-            const coordinates = e.lngLat;
-            const properties = e.features[0].properties;
-
-            new maplibregl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`
+        new maplibregl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(`
                     <strong>${properties.NAME_ENG || properties.NAME || 'Protected Area'}</strong><br>
                     ${properties.DESIG_ENG ? 'Type: ' + properties.DESIG_ENG + '<br>' : ''}
                     ${properties.IUCN_CAT ? 'IUCN Category: ' + properties.IUCN_CAT + '<br>' : ''}
@@ -786,155 +584,51 @@ map.on('load', function () {
                     ${properties.GIS_AREA ? 'Area: ' + properties.GIS_AREA + ' km²<br>' : ''}
                     ${properties.STATUS_YR ? 'Year: ' + properties.STATUS_YR + '<br>' : ''}
                 `)
-                .addTo(map);
-        });
-
-        // Change cursor on hover
-        map.on('mouseenter', 'wdpa-layer', () => {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'wdpa-layer', () => {
-            map.getCanvas().style.cursor = '';
-        });
-
-        console.log('WDPA layer added successfully');
-
-        // Add HydroBASINS level 6 PMTiles layer
-        map.addSource('hydrobasins-source', {
-            'type': 'vector',
-            'url': 'pmtiles://https://s3-west.nrp-nautilus.io/public-hydrobasins/level_06/hydrobasins_level_06.pmtiles',
-            'attribution': '<a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank">HydroBASINS</a>'
-        });
-
-        map.addLayer({
-            'id': 'hydrobasins-fill',
-            'type': 'fill',
-            'source': 'hydrobasins-source',
-            'source-layer': 'hydrobasins_level_06',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'fill-color': '#1E88E5',
-                'fill-opacity': 0.05
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
-
-        map.addLayer({
-            'id': 'hydrobasins-layer',
-            'type': 'line',
-            'source': 'hydrobasins-source',
-            'source-layer': 'hydrobasins_level_06',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'line-color': '#1E88E5',
-                'line-width': 1.5,
-                'line-opacity': 0.8
-            },
-            'layout': {
-                'visibility': 'none'
-            }
-        });
-
-        // Add click popup for HydroBASINS
-        map.on('click', 'hydrobasins-fill', (e) => {
-            const coordinates = e.lngLat;
-            const properties = e.features[0].properties;
-
-            new maplibregl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(`
-                    <strong>Watershed Basin</strong><br>
-                    ${properties.PFAF_ID ? 'Pfafstetter ID: ' + properties.PFAF_ID + '<br>' : ''}
-                    ${properties.UP_AREA ? 'Upstream Area: ' + properties.UP_AREA + ' km²<br>' : ''}
-                    ${properties.SUB_AREA ? 'Sub-basin Area: ' + properties.SUB_AREA + ' km²<br>' : ''}
-                `)
-                .addTo(map);
-        });
-
-        // Change cursor on hover
-        map.on('mouseenter', 'hydrobasins-fill', () => {
-            map.getCanvas().style.cursor = 'pointer';
-        });
-        map.on('mouseleave', 'hydrobasins-fill', () => {
-            map.getCanvas().style.cursor = '';
-        });
-
-        console.log('HydroBASINS layer added successfully');
-
-        // Set up wetlands layer toggle after layer is added
-        const wetlandsCheckbox = document.getElementById('wetlands-layer');
-        const legend = document.getElementById('legend');
-        if (wetlandsCheckbox) {
-            wetlandsCheckbox.addEventListener('change', function () {
-                if (this.checked) {
-                    map.setLayoutProperty('wetlands-layer', 'visibility', 'visible');
-                    legend.style.display = 'block';
-                } else {
-                    map.setLayoutProperty('wetlands-layer', 'visibility', 'none');
-                    legend.style.display = 'none';
-                }
-            });
-        }
-
-        // Set up NCP layer toggle
-        const ncpCheckbox = document.getElementById('ncp-layer');
-        if (ncpCheckbox) {
-            ncpCheckbox.addEventListener('change', function () {
-                if (this.checked) {
-                    map.setLayoutProperty('ncp-layer', 'visibility', 'visible');
-                } else {
-                    map.setLayoutProperty('ncp-layer', 'visibility', 'none');
-                }
-            });
-        }
-
-        // Set up carbon layer toggle
-        const carbonCheckbox = document.getElementById('carbon-layer');
-        if (carbonCheckbox) {
-            carbonCheckbox.addEventListener('change', function () {
-                if (this.checked) {
-                    map.setLayoutProperty('carbon-layer', 'visibility', 'visible');
-                } else {
-                    map.setLayoutProperty('carbon-layer', 'visibility', 'none');
-                }
-            });
-        }
-
-        // Set up Ramsar layer toggle
-        const ramsarCheckbox = document.getElementById('ramsar-layer');
-        if (ramsarCheckbox) {
-            ramsarCheckbox.addEventListener('change', function () {
-                const visibility = this.checked ? 'visible' : 'none';
-                map.setLayoutProperty('ramsar-layer', 'visibility', visibility);
-                map.setLayoutProperty('ramsar-outline', 'visibility', visibility);
-            });
-        }
-
-        // Set up WDPA layer toggle
-        const wdpaCheckbox = document.getElementById('wdpa-layer');
-        if (wdpaCheckbox) {
-            wdpaCheckbox.addEventListener('change', function () {
-                const visibility = this.checked ? 'visible' : 'none';
-                map.setLayoutProperty('wdpa-layer', 'visibility', visibility);
-            });
-        }
-
-        // Set up HydroBASINS layer toggle
-        const hydrobasinsCheckbox = document.getElementById('hydrobasins-layer');
-        if (hydrobasinsCheckbox) {
-            hydrobasinsCheckbox.addEventListener('change', function () {
-                const visibility = this.checked ? 'visible' : 'none';
-                map.setLayoutProperty('hydrobasins-fill', 'visibility', visibility);
-                map.setLayoutProperty('hydrobasins-layer', 'visibility', visibility);
-            });
-        }
-    }).catch(error => {
-        console.error('Error adding wetlands layer:', error);
+            .addTo(map);
     });
+
+    // Change cursor on hover
+    map.on('mouseenter', 'wdpa-layer', () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+    map.on('mouseleave', 'wdpa-layer', () => {
+        map.getCanvas().style.cursor = '';
+    });
+
+    console.log('WDPA layer added successfully');
+
+    // Set up NCP layer toggle
+    const ncpCheckbox = document.getElementById('ncp-layer');
+    if (ncpCheckbox) {
+        ncpCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                map.setLayoutProperty('ncp-layer', 'visibility', 'visible');
+            } else {
+                map.setLayoutProperty('ncp-layer', 'visibility', 'none');
+            }
+        });
+    }
+
+    // Set up carbon layer toggle
+    const carbonCheckbox = document.getElementById('carbon-layer');
+    if (carbonCheckbox) {
+        carbonCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                map.setLayoutProperty('carbon-layer', 'visibility', 'visible');
+            } else {
+                map.setLayoutProperty('carbon-layer', 'visibility', 'none');
+            }
+        });
+    }
+
+    // Set up WDPA layer toggle
+    const wdpaCheckbox = document.getElementById('wdpa-layer');
+    if (wdpaCheckbox) {
+        wdpaCheckbox.addEventListener('change', function () {
+            const visibility = this.checked ? 'visible' : 'none';
+            map.setLayoutProperty('wdpa-layer', 'visibility', visibility);
+        });
+    }
 });
 
 // Base layer switcher functionality
@@ -942,51 +636,17 @@ function switchBaseLayer(styleName) {
     const styleUrl = styleName === 'dark' ? darkStyleUrl : datavizStyleUrl;
 
     // Store current layer states
-    const wetlandsVisible = map.getLayer('wetlands-layer') ?
-        map.getLayoutProperty('wetlands-layer', 'visibility') !== 'none' : true;
     const ncpVisible = map.getLayer('ncp-layer') ?
         map.getLayoutProperty('ncp-layer', 'visibility') !== 'none' : false;
     const carbonVisible = map.getLayer('carbon-layer') ?
         map.getLayoutProperty('carbon-layer', 'visibility') !== 'none' : false;
-    const ramsarVisible = map.getLayer('ramsar-layer') ?
-        map.getLayoutProperty('ramsar-layer', 'visibility') !== 'none' : false;
-    const ramsarOutlineVisible = ramsarVisible;
     const wdpaVisible = map.getLayer('wdpa-layer') ?
         map.getLayoutProperty('wdpa-layer', 'visibility') !== 'none' : false;
-    const wdpaOutlineVisible = wdpaVisible;
-    const hydrobasinsVisible = map.getLayer('hydrobasins-layer') ?
-        map.getLayoutProperty('hydrobasins-layer', 'visibility') !== 'none' : false;
-    const hydrobasinsFillVisible = hydrobasinsVisible;
 
     map.setStyle(styleUrl);
 
     // Re-add layers after style loads
     map.once('styledata', function () {
-        map.addSource('wetlands-cog', {
-            'type': 'raster',
-            'tiles': [
-                `https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-wetlands/GLWD_v2_0/GLWD_v2_0_combined_classes/GLWD_v2_0_main_class.tif&colormap=${wetlandColormap}`
-            ],
-            'tileSize': 256,
-            'minzoom': 0,
-            'maxzoom': 12,
-            'attribution': '<a href="https://data.hydrosheds.org/file/hydrobasins/GLWD_TechDoc_v2_0.pdf" target="_blank">GLWD v2.0</a>'
-        });
-
-        map.addLayer({
-            'id': 'wetlands-layer',
-            'type': 'raster',
-            'source': 'wetlands-cog',
-            'paint': {
-                'raster-opacity': 0.7
-            }
-        });
-
-        if (!wetlandsVisible) {
-            map.setLayoutProperty('wetlands-layer', 'visibility', 'none');
-            document.getElementById('wetlands-layer').checked = false;
-        }
-
         // Re-add NCP layer
         map.addSource('ncp-cog', {
             'type': 'raster',
@@ -1039,45 +699,6 @@ function switchBaseLayer(styleName) {
             document.getElementById('carbon-layer').checked = false;
         }
 
-        // Re-add Ramsar layer
-        map.addSource('ramsar-source', {
-            'type': 'vector',
-            'url': 'pmtiles://https://minio.carlboettiger.info/public-wetlands/ramsar/ramsar_wetlands.pmtiles',
-            'attribution': '<a href="https://rsis.ramsar.org/" target="_blank">Ramsar Sites Information Service</a>'
-        });
-
-        map.addLayer({
-            'id': 'ramsar-layer',
-            'type': 'fill',
-            'source': 'ramsar-source',
-            'source-layer': 'ramsar',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'fill-color': '#FF1493',
-                'fill-opacity': 0.6
-            }
-        });
-
-        map.addLayer({
-            'id': 'ramsar-outline',
-            'type': 'line',
-            'source': 'ramsar-source',
-            'source-layer': 'ramsar',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'line-color': '#8B008B',
-                'line-width': 2
-            }
-        });
-
-        if (!ramsarVisible) {
-            map.setLayoutProperty('ramsar-layer', 'visibility', 'none');
-            map.setLayoutProperty('ramsar-outline', 'visibility', 'none');
-            document.getElementById('ramsar-layer').checked = false;
-        }
-
         // Re-add WDPA layer
         map.addSource('wdpa-source', {
             'type': 'vector',
@@ -1102,46 +723,6 @@ function switchBaseLayer(styleName) {
             map.setLayoutProperty('wdpa-layer', 'visibility', 'none');
             document.getElementById('wdpa-layer').checked = false;
         }
-
-        // Re-add HydroBASINS layer
-        map.addSource('hydrobasins-source', {
-            'type': 'vector',
-            'url': 'pmtiles://https://s3-west.nrp-nautilus.io/public-hydrobasins/level_06/hydrobasins_level_06.pmtiles',
-            'attribution': '<a href="https://www.hydrosheds.org/products/hydrobasins" target="_blank">HydroBASINS</a>'
-        });
-
-        map.addLayer({
-            'id': 'hydrobasins-fill',
-            'type': 'fill',
-            'source': 'hydrobasins-source',
-            'source-layer': 'hydrobasins_level_06',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'fill-color': '#1E88E5',
-                'fill-opacity': 0.05
-            }
-        });
-
-        map.addLayer({
-            'id': 'hydrobasins-layer',
-            'type': 'line',
-            'source': 'hydrobasins-source',
-            'source-layer': 'hydrobasins_level_06',
-            'minzoom': 0,
-            'maxzoom': 22,
-            'paint': {
-                'line-color': '#1E88E5',
-                'line-width': 1.5,
-                'line-opacity': 0.8
-            }
-        });
-
-        if (!hydrobasinsVisible) {
-            map.setLayoutProperty('hydrobasins-fill', 'visibility', 'none');
-            map.setLayoutProperty('hydrobasins-layer', 'visibility', 'none');
-            document.getElementById('hydrobasins-layer').checked = false;
-        }
     });
 }
 
@@ -1151,19 +732,6 @@ document.querySelectorAll('input[name="basemap"]').forEach(radio => {
             switchBaseLayer(this.value);
         }
     });
-});
-
-// Legend toggle functionality
-const legendToggle = document.getElementById('legend-toggle');
-const legendContent = document.getElementById('legend-content');
-
-legendToggle.addEventListener('click', function () {
-    legendContent.classList.toggle('collapsed');
-    if (legendContent.classList.contains('collapsed')) {
-        legendToggle.textContent = '+';
-    } else {
-        legendToggle.textContent = '−';
-    }
 });
 
 // Initialize generic map controller after map is fully loaded
