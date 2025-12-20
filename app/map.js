@@ -510,6 +510,9 @@ window.MapController = {
                     tileSize: 256
                 });
 
+                // Determine layer ordering: add before wdpa-layer if it exists, otherwise add at end
+                const beforeLayer = window.map.getLayer('wdpa-layer') ? 'wdpa-layer' : undefined;
+
                 window.map.addLayer({
                     id: 'species-richness-layer',
                     type: 'raster',
@@ -523,7 +526,7 @@ window.MapController = {
                             return layer && window.map.getLayoutProperty(id, 'visibility') === 'visible';
                         }) ? 'visible' : 'none'
                     }
-                }, 'wdpa-layer'); // Add before WDPA layer
+                }, beforeLayer);
 
                 console.log(`[MapController] Species richness filter updated: ${taxon}, ${speciesType}`);
             }
@@ -627,7 +630,7 @@ map.on('load', function () {
         'layout': {
             'visibility': 'none'
         }
-    }, 'wdpa-layer'); // Add before WDPA so protected areas show on top
+    });
 
     console.log('Species richness layer added successfully');
 

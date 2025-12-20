@@ -74,6 +74,23 @@ body {
     cursor: pointer;
 }
 
+/* Glass effect for species richness dropdown */
+#species-taxon {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    color: #404040;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+#species-taxon option {
+    background: rgba(255, 255, 255, 0.95);
+    color: #404040;
+}
+
 /* Legend styles */
 #legend {
     background: rgba(255, 255, 255, 0) !important;
