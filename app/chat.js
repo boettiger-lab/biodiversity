@@ -276,8 +276,8 @@ class BiodiversityChatbot {
         this.addMessage(
             'assistant',
             'Hi! I can help you explore global biodiversity data and control the map. Try asking:\n\n' +
-            '* "How much protected area is in India?"\n' +
-            '* "Show threatened amphibian diversity hotspots by protected area"\n' +
+            '* "Which protected areas have the highest ave number of threatened species in the US? Also show them on the map"\n' +
+            '* "Show protected areas in Canada whose mean carbon density is in the top 10% of all CA protected areas"\n' +
             '* "Calculate vulnerable carbon stored in IUCN category Ia areas"\n' +
             '* "Show state-owned protected areas colored by IUCN category"'
         );

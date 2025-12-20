@@ -577,7 +577,7 @@ const map = new maplibregl.Map({
     // projection: 'globe',
     style: 'https://api.maptiler.com/maps/dataviz-v4/style.json?key=0Vzl9yHwu0Xyx4TwT2Iw',
     center: [0, 20],
-    zoom: 1.5
+    zoom: 2
 });
 
 // Expose map globally for MapController access
