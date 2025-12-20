@@ -32,16 +32,6 @@ Every dataset listed below has:
 - **Map Usage:** Show carbon density - `toggle_map_layer` with `layer="carbon"`
 - **Partitioning:** Hive-partitioned by h0 hex-id
 
-### 2. Nature's Contributions to People (NCP)
-**Data:** `s3://public-ncp/hex/ncp_biod_nathab/**`  
-**Map Layer:** `ncp` (raster - COG)
-
-- **Columns:** ncp (score 0-1, high to low), h8 (H3 hex ID), h0 (coarse hex ID)
-- **Description:** Critical areas for biodiversity and nature's contributions to people
-- **Source:** <https://doi.org/10.1038/s41467-023-43832-9>
-- **Map Usage:** Show NCP scores - `toggle_map_layer` with `layer="ncp"`
-- **Partitioning:** Hive-partitioned by h0 hex-id
-
 ### 2. IUCN Species Richness (2025)
 **Data:** `s3://public-iucn/richness/hex/{layer_name}/**`  
 **Map Layer:** `species_richness` (raster - COG, dynamic)
@@ -110,6 +100,7 @@ Every dataset listed below has:
 - **Usage:** Join with other datasets to filter or group by region
 - **Partitioning:** Hive-partitioned by h0 hex-id
 - **Note:** Avoid column name collisions (e.g., `name`, `id`) when joining
+
 
 ## Map Control Tools
 
