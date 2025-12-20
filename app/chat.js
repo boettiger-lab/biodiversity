@@ -277,9 +277,9 @@ class BiodiversityChatbot {
             'assistant',
             'Hi! I can help you explore global biodiversity data and control the map. Try asking:\n\n' +
             '* "Which protected areas have the highest ave number of threatened species in the US? Also show them on the map"\n' +
-            '* "Show protected areas in Canada whose mean carbon density is in the top 10% of all CA protected areas"\n' +
-            '* "Calculate vulnerable carbon stored in IUCN category Ia areas"\n' +
-            '* "Show state-owned protected areas colored by IUCN category"'
+            '* "What fraction of Canada is in protected areas? What fraction of the vulnerable carbon is protected?"\n' +
+            '* "Describe the datasets you have available and where I can learn more about them"\n' +
+            '* "Compute total carbon storage & species richness of each protected area in Brazil as a csv file"'
         );
     }
 
