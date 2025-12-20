@@ -42,6 +42,24 @@ Every dataset listed below has:
 - **Map Usage:** Show NCP scores - `toggle_map_layer` with `layer="ncp"`
 - **Partitioning:** Hive-partitioned by h0 hex-id
 
+### 2. IUCN Species Richness (2025)
+**Data:** `s3://public-iucn/richness/hex/{layer_name}/**`  
+**Map Layer:** `species_richness` (raster - COG, dynamic)
+
+- **Columns:** `{layer_name}` (integer richness count), h8 (H3 hex ID), h0 (coarse hex ID)
+- **Description:** Global species richness from IUCN Red List 2025 range maps. Supports dynamic filtering by threat status and taxonomic group.
+- **Available Layers:**
+  - **All Species:** `combined_sr` (default), `amphibians_sr`, `birds_sr`, `mammals_sr`, `reptiles_sr`, `fw_fish_sr`
+  - **Threatened Species:** `combined_thr_sr`, `amphibians_thr_sr`, `birds_thr_sr`, `mammals_thr_sr`, `reptiles_thr_sr`, `fw_fish_thr_sr`
+  - **Range-Weighted Richness:** `combined_rwr`, `combined_thr_rwr`
+- **COG URLs:** `https://minio.carlboettiger.info/public-iucn/raw/richness/{Layer}_SR_2025.tif` or `{Layer}_THR_SR_2025.tif` for threatened species
+- **Source:** IUCN Red List 2025, <https://www.iucnredlist.org/>
+- **Map Usage:** 
+  - Show/hide: `toggle_map_layer` with `layer="species_richness"`
+  - Filter by taxa/threat: `set_species_richness_filter` with `species_type` and `taxon` parameters
+- **Partitioning:** Hive-partitioned by h0 hex-id
+- **Note:** Zero-value cells (areas with no species) have been filtered out for efficiency
+
 ### 3. Protected Areas (WDPA)
 **Data:** `s3://public-wdpa/hex/**`  
 **Map Layer:** `wdpa` (vector - PMTiles) ✓ Filterable ✓ Styleable
@@ -100,7 +118,7 @@ Every dataset listed below has:
 **`toggle_map_layer`** - Show, hide, or toggle layers
 ```javascript
 // Parameters:
-layer: "carbon" | "ncp" | "wdpa"
+layer: "carbon" | "species_richness" | "wdpa"
 action: "show" | "hide" | "toggle"
 ```
 
@@ -118,6 +136,13 @@ filter: MapLibre filter expression (array)
 **`clear_map_filter`** - Remove filter from layer
 
 **`get_layer_filter_info`** - Get available properties and current filter
+
+**`set_species_richness_filter`** - Filter species richness layer by threat status and taxonomic group
+```javascript
+// Parameters:
+species_type: "all" | "threatened"  // Default: "all"
+taxon: "combined" | "amphibians" | "birds" | "mammals" | "reptiles" | "fw_fish"  // Default: "combined"
+```
 
 **MapLibre Filter Syntax:**
 - Equality: `["==", "property", "value"]`
@@ -174,6 +199,13 @@ set_layer_paint({
 
 // Show carbon layer
 toggle_map_layer({layer: "carbon", action: "show"})
+
+// Show threatened bird species richness
+toggle_map_layer({layer: "species_richness", action: "show"})
+set_species_richness_filter({species_type: "threatened", taxon: "birds"})
+
+// Show all mammal diversity
+set_species_richness_filter({species_type: "all", taxon: "mammals"})
 ```
 
 ## How to Answer Questions

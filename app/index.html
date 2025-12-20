@@ -38,9 +38,36 @@
                     <span>Vulnerable Carbon</span>
                 </label>
                 <label>
-                    <input id="ncp-layer" type="checkbox" name="rtoggle" value="ncp">
-                    <span>Nature's Contributions</span>
+                    <input id="species-richness-layer" type="checkbox" name="rtoggle" value="species_richness">
+                    <span>🦜 Species Richness</span>
                 </label>
+                <div id="species-richness-controls" class="layer-controls"
+                    style="display: none; margin-left: 20px; margin-top: 5px;">
+                    <div style="margin-bottom: 8px;">
+                        <label style="font-size: 11px; color: #666; display: block; margin-bottom: 3px;">Species
+                            Type:</label>
+                        <label style="font-size: 12px; margin-right: 10px;">
+                            <input type="radio" name="species-type" value="all" checked>
+                            <span>All Species</span>
+                        </label>
+                        <label style="font-size: 12px;">
+                            <input type="radio" name="species-type" value="threatened">
+                            <span>Threatened</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; color: #666; display: block; margin-bottom: 3px;">Taxonomic
+                            Group:</label>
+                        <select id="species-taxon" style="width: 100%; font-size: 12px;">
+                            <option value="combined">🌍 All Groups</option>
+                            <option value="amphibians">🐸 Amphibians</option>
+                            <option value="birds">🦜 Birds</option>
+                            <option value="mammals">🦁 Mammals</option>
+                            <option value="reptiles">🦎 Reptiles</option>
+                            <option value="fw_fish">🐟 Freshwater Fish</option>
+                        </select>
+                    </div>
+                </div>
                 <label>
                     <input id="wdpa-layer" type="checkbox" name="rtoggle" value="wdpa">
                     <span>Protected Areas (WDPA)</span>

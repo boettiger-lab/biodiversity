@@ -14,19 +14,21 @@ let genericMapController = null;
 window.MapController = {
     // Legacy layers object (will be populated from LayerRegistry)
     layers: {
-        'ncp': {
-            displayName: "Nature's Contributions to People",
-            layerIds: ['ncp-layer'],
-            checkboxId: 'ncp-layer',
-            hasLegend: false,
-            isVector: false
-        },
         'carbon': {
             displayName: 'Vulnerable Carbon',
             layerIds: ['carbon-layer'],
             checkboxId: 'carbon-layer',
             hasLegend: false,
             isVector: false
+        },
+        'species_richness': {
+            displayName: 'Species Richness',
+            layerIds: ['species-richness-layer'],
+            checkboxId: 'species-richness-layer',
+            hasLegend: false,
+            isVector: false,
+            currentTaxon: 'combined',
+            currentSpeciesType: 'sr'
         },
         'wdpa': {
             displayName: 'Protected Areas (WDPA)',
@@ -463,6 +465,90 @@ window.MapController = {
             console.error('[MapController] Error resetting paint:', error);
             return { success: false, error: error.message };
         }
+    },
+
+    // Helper function to generate species richness COG URL
+    getSpeciesRichnessUrl: function (taxon, speciesType) {
+        // speciesType: 'all' or 'threatened'
+        // taxon: 'combined', 'amphibians', 'birds', 'mammals', 'reptiles', 'fw_fish'
+        const typeCode = speciesType === 'threatened' ? 'thr_sr' : 'sr';
+        const layerName = `${taxon}_${typeCode}`;
+        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://minio.carlboettiger.info/public-iucn/raw/richness/${layerName}.tif&rescale=0,800&colormap_name=turbo`;
+    },
+
+    // Set species richness filter (taxon and species type)
+    setSpeciesRichnessFilter: function (speciesType, taxon) {
+        // speciesType: 'all' or 'threatened'
+        // taxon: 'combined', 'amphibians', 'birds', 'mammals', 'reptiles', 'fw_fish'
+
+        const config = this.layers['species_richness'];
+        if (!config) {
+            return { success: false, error: 'Species richness layer not configured' };
+        }
+
+        if (!window.map || !window.map.getSource) {
+            return { success: false, error: 'Map not yet initialized' };
+        }
+
+        try {
+            const typeCode = speciesType === 'threatened' ? 'thr_sr' : 'sr';
+            config.currentTaxon = taxon;
+            config.currentSpeciesType = typeCode;
+
+            const newUrl = this.getSpeciesRichnessUrl(taxon, speciesType);
+
+            // Update the source URL
+            const source = window.map.getSource('species-richness-cog');
+            if (source) {
+                // Remove and re-add the source with new URL
+                window.map.removeLayer('species-richness-layer');
+                window.map.removeSource('species-richness-cog');
+
+                window.map.addSource('species-richness-cog', {
+                    type: 'raster',
+                    tiles: [newUrl],
+                    tileSize: 256
+                });
+
+                window.map.addLayer({
+                    id: 'species-richness-layer',
+                    type: 'raster',
+                    source: 'species-richness-cog',
+                    paint: {
+                        'raster-opacity': 0.7
+                    },
+                    layout: {
+                        visibility: config.layerIds.some(id => {
+                            const layer = window.map.getLayer(id);
+                            return layer && window.map.getLayoutProperty(id, 'visibility') === 'visible';
+                        }) ? 'visible' : 'none'
+                    }
+                }, 'wdpa-layer'); // Add before WDPA layer
+
+                console.log(`[MapController] Species richness filter updated: ${taxon}, ${speciesType}`);
+            }
+
+            const taxonNames = {
+                'combined': 'All Groups',
+                'amphibians': 'Amphibians',
+                'birds': 'Birds',
+                'mammals': 'Mammals',
+                'reptiles': 'Reptiles',
+                'fw_fish': 'Freshwater Fish'
+            };
+
+            return {
+                success: true,
+                layer: 'species_richness',
+                speciesType: speciesType,
+                taxon: taxon,
+                displayName: config.displayName,
+                description: `Showing ${speciesType === 'threatened' ? 'threatened' : 'all'} species for ${taxonNames[taxon] || taxon}`
+            };
+        } catch (error) {
+            console.error('[MapController] Error setting species richness filter:', error);
+            return { success: false, error: error.message };
+        }
     }
 };
 
@@ -494,32 +580,6 @@ const datavizStyleUrl = 'https://api.maptiler.com/maps/dataviz-v4/style.json?key
 map.on('load', function () {
     console.log('Map loaded, adding layers...');
 
-    // Add NCP biodiversity layer
-    map.addSource('ncp-cog', {
-        'type': 'raster',
-        'tiles': [
-            'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-ncp/NCP_biod_nathab_cog.tif&rescale=0,19&colormap_name=viridis'
-        ],
-        'tileSize': 256,
-        'minzoom': 0,
-        'maxzoom': 12,
-        'attribution': '<a href="https://doi.org/10.1038/s41467-023-43832-9" target="_blank">Nature\'s Contributions to People</a>'
-    });
-
-    map.addLayer({
-        'id': 'ncp-layer',
-        'type': 'raster',
-        'source': 'ncp-cog',
-        'paint': {
-            'raster-opacity': 0.7
-        },
-        'layout': {
-            'visibility': 'none'
-        }
-    });
-
-    console.log('NCP layer added successfully');
-
     // Add vulnerable carbon layer
     map.addSource('carbon-cog', {
         'type': 'raster',
@@ -545,6 +605,31 @@ map.on('load', function () {
     });
 
     console.log('Carbon layer added successfully');
+
+    // Add species richness layer (default: combined, all species)
+    const defaultSpeciesUrl = window.MapController.getSpeciesRichnessUrl('combined', 'all');
+    map.addSource('species-richness-cog', {
+        'type': 'raster',
+        'tiles': [defaultSpeciesUrl],
+        'tileSize': 256,
+        'minzoom': 0,
+        'maxzoom': 12,
+        'attribution': '<a href="https://www.iucnredlist.org/" target="_blank">IUCN Red List 2025</a>'
+    });
+
+    map.addLayer({
+        'id': 'species-richness-layer',
+        'type': 'raster',
+        'source': 'species-richness-cog',
+        'paint': {
+            'raster-opacity': 0.7
+        },
+        'layout': {
+            'visibility': 'none'
+        }
+    }, 'wdpa-layer'); // Add before WDPA so protected areas show on top
+
+    console.log('Species richness layer added successfully');
 
     // Add WDPA protected areas PMTiles layer
     map.addSource('wdpa-source', {
@@ -597,18 +682,6 @@ map.on('load', function () {
 
     console.log('WDPA layer added successfully');
 
-    // Set up NCP layer toggle
-    const ncpCheckbox = document.getElementById('ncp-layer');
-    if (ncpCheckbox) {
-        ncpCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                map.setLayoutProperty('ncp-layer', 'visibility', 'visible');
-            } else {
-                map.setLayoutProperty('ncp-layer', 'visibility', 'none');
-            }
-        });
-    }
-
     // Set up carbon layer toggle
     const carbonCheckbox = document.getElementById('carbon-layer');
     if (carbonCheckbox) {
@@ -619,6 +692,39 @@ map.on('load', function () {
                 map.setLayoutProperty('carbon-layer', 'visibility', 'none');
             }
         });
+    }
+
+    // Set up species richness layer toggle
+    const speciesRichnessCheckbox = document.getElementById('species-richness-layer');
+    const speciesRichnessControls = document.getElementById('species-richness-controls');
+    if (speciesRichnessCheckbox) {
+        speciesRichnessCheckbox.addEventListener('change', function () {
+            const visibility = this.checked ? 'visible' : 'none';
+            map.setLayoutProperty('species-richness-layer', 'visibility', visibility);
+
+            // Toggle controls visibility
+            if (speciesRichnessControls) {
+                speciesRichnessControls.style.display = this.checked ? 'block' : 'none';
+            }
+        });
+    }
+
+    // Set up species richness filter controls
+    const speciesTypeRadios = document.querySelectorAll('input[name="species-type"]');
+    const speciesTaxonSelect = document.getElementById('species-taxon');
+
+    function updateSpeciesRichnessLayer() {
+        const speciesType = document.querySelector('input[name="species-type"]:checked')?.value || 'all';
+        const taxon = speciesTaxonSelect?.value || 'combined';
+        window.MapController.setSpeciesRichnessFilter(speciesType, taxon);
+    }
+
+    speciesTypeRadios.forEach(radio => {
+        radio.addEventListener('change', updateSpeciesRichnessLayer);
+    });
+
+    if (speciesTaxonSelect) {
+        speciesTaxonSelect.addEventListener('change', updateSpeciesRichnessLayer);
     }
 
     // Set up WDPA layer toggle
@@ -636,43 +742,21 @@ function switchBaseLayer(styleName) {
     const styleUrl = styleName === 'dark' ? darkStyleUrl : datavizStyleUrl;
 
     // Store current layer states
-    const ncpVisible = map.getLayer('ncp-layer') ?
-        map.getLayoutProperty('ncp-layer', 'visibility') !== 'none' : false;
     const carbonVisible = map.getLayer('carbon-layer') ?
         map.getLayoutProperty('carbon-layer', 'visibility') !== 'none' : false;
+    const speciesRichnessVisible = map.getLayer('species-richness-layer') ?
+        map.getLayoutProperty('species-richness-layer', 'visibility') !== 'none' : false;
     const wdpaVisible = map.getLayer('wdpa-layer') ?
         map.getLayoutProperty('wdpa-layer', 'visibility') !== 'none' : false;
+
+    // Store current species richness filter state
+    const currentTaxon = window.MapController.layers.species_richness?.currentTaxon || 'combined';
+    const currentSpeciesType = window.MapController.layers.species_richness?.currentSpeciesType || 'sr';
 
     map.setStyle(styleUrl);
 
     // Re-add layers after style loads
     map.once('styledata', function () {
-        // Re-add NCP layer
-        map.addSource('ncp-cog', {
-            'type': 'raster',
-            'tiles': [
-                'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-ncp/NCP_biod_nathab_cog.tif&rescale=0,19&colormap_name=viridis'
-            ],
-            'tileSize': 256,
-            'minzoom': 0,
-            'maxzoom': 12,
-            'attribution': '<a href="https://doi.org/10.1038/s41467-023-43832-9" target="_blank">Nature\'s Contributions to People</a>'
-        });
-
-        map.addLayer({
-            'id': 'ncp-layer',
-            'type': 'raster',
-            'source': 'ncp-cog',
-            'paint': {
-                'raster-opacity': 0.7
-            }
-        });
-
-        if (!ncpVisible) {
-            map.setLayoutProperty('ncp-layer', 'visibility', 'none');
-            document.getElementById('ncp-layer').checked = false;
-        }
-
         // Re-add carbon layer
         map.addSource('carbon-cog', {
             'type': 'raster',
@@ -697,6 +781,34 @@ function switchBaseLayer(styleName) {
         if (!carbonVisible) {
             map.setLayoutProperty('carbon-layer', 'visibility', 'none');
             document.getElementById('carbon-layer').checked = false;
+        }
+
+        // Re-add species richness layer with current filter
+        const speciesUrl = currentSpeciesType === 'thr_sr' ?
+            window.MapController.getSpeciesRichnessUrl(currentTaxon, 'threatened') :
+            window.MapController.getSpeciesRichnessUrl(currentTaxon, 'all');
+
+        map.addSource('species-richness-cog', {
+            'type': 'raster',
+            'tiles': [speciesUrl],
+            'tileSize': 256,
+            'minzoom': 0,
+            'maxzoom': 12,
+            'attribution': '<a href="https://www.iucnredlist.org/" target="_blank">IUCN Red List 2025</a>'
+        });
+
+        map.addLayer({
+            'id': 'species-richness-layer',
+            'type': 'raster',
+            'source': 'species-richness-cog',
+            'paint': {
+                'raster-opacity': 0.7
+            }
+        }, 'wdpa-layer');
+
+        if (!speciesRichnessVisible) {
+            map.setLayoutProperty('species-richness-layer', 'visibility', 'none');
+            document.getElementById('species-richness-layer').checked = false;
         }
 
         // Re-add WDPA layer

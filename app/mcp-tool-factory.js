@@ -38,7 +38,8 @@ export class MCPToolFactory {
             this.generateClearFilterTool(),
             this.generateGetFilterInfoTool(),
             this.generateSetPaintTool(),
-            this.generateResetPaintTool()
+            this.generateResetPaintTool(),
+            this.generateSetSpeciesRichnessFilterTool()
         ];
     }
 
@@ -307,6 +308,37 @@ IMPORTANT: When explaining colors to users, display them as visual legend boxes 
             },
             execute: (args) => {
                 const result = this.mapController.resetLayerPaint(args.layer);
+                return JSON.stringify(result);
+            }
+        };
+    }
+
+    /**
+     * Generate set_species_richness_filter tool
+     * @returns {Object} - Tool definition
+     */
+    generateSetSpeciesRichnessFilterTool() {
+        return {
+            name: 'set_species_richness_filter',
+            description: `Filter the species richness layer to show different taxonomic groups and species types. Use this to switch between viewing all species or only threatened species, and to focus on specific taxonomic groups like mammals, birds, amphibians, reptiles, or freshwater fish.`,
+            inputSchema: {
+                type: 'object',
+                properties: {
+                    species_type: {
+                        type: 'string',
+                        description: 'The type of species to display: "all" shows all species richness, "threatened" shows only threatened and endangered species',
+                        enum: ['all', 'threatened']
+                    },
+                    taxon: {
+                        type: 'string',
+                        description: 'The taxonomic group to display: "combined" shows all groups together, or choose a specific group',
+                        enum: ['combined', 'amphibians', 'birds', 'mammals', 'reptiles', 'fw_fish']
+                    }
+                },
+                required: ['species_type', 'taxon']
+            },
+            execute: (args) => {
+                const result = this.mapController.setSpeciesRichnessFilter(args.species_type, args.taxon);
                 return JSON.stringify(result);
             }
         };
