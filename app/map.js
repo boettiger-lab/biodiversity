@@ -471,9 +471,22 @@ window.MapController = {
     getSpeciesRichnessUrl: function (taxon, speciesType) {
         // speciesType: 'all' or 'threatened'
         // taxon: 'combined', 'amphibians', 'birds', 'mammals', 'reptiles', 'fw_fish'
-        const typeCode = speciesType === 'threatened' ? 'thr_sr' : 'sr';
-        const layerName = `${taxon}_${typeCode}`;
-        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://s3-west.nrp-nautilus.io/public-iucn/cog/${layerName}.tif&rescale=0,800&colormap_name=turbo`;
+
+        // Map taxon to capitalized filename format
+        const taxonMap = {
+            'combined': 'Combined',
+            'amphibians': 'Amphibians',
+            'birds': 'Birds',
+            'mammals': 'Mammals',
+            'reptiles': 'Reptiles',
+            'fw_fish': 'FW_Fish'
+        };
+
+        const taxonName = taxonMap[taxon] || 'Combined';
+        const typeCode = speciesType === 'threatened' ? 'THR_SR' : 'SR';
+        const filename = `${taxonName}_${typeCode}_2025.tif`;
+
+        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://s3-west.nrp-nautilus.io/public-iucn/cog/richness/${filename}&rescale=0,800&colormap_name=turbo`;
     },
 
     // Set species richness filter (taxon and species type)
