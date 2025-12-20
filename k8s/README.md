@@ -72,7 +72,6 @@ The deployment injects these environment variables into the runtime config:
 
 - `MCP_SERVER_URL` - MCP server SSE endpoint (default: https://biodiversity-mcp.nrp-nautilus.io/sse)
 - `LLM_ENDPOINT` - Shared LLM proxy base URL (default: https://llm-proxy.nrp-nautilus.io/v1)
-- `DEFAULT_LLM_MODEL` - Default model to use (default: kimi)
 - `PROXY_KEY` - Shared API key for all models using the same endpoint (from `llm-proxy-secrets`)
 
 ### Setting up Secrets
