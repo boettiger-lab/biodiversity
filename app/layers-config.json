@@ -10,7 +10,7 @@
             "checkboxId": "wetlands-layer",
             "hasLegend": true,
             "isVector": false,
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/glwd.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/glwd.pmtiles",
             "dataTablePath": "s3://public-wetlands/glwd/hex/**",
             "description": "Global Lakes and Wetlands Database (GLWD) showing wetland types worldwide"
         },
@@ -22,7 +22,7 @@
             "checkboxId": "ncp-layer",
             "hasLegend": false,
             "isVector": false,
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/ncp.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/ncp.pmtiles",
             "dataTablePath": "s3://public-ncp/hex/ncp_biod_nathab/**",
             "description": "Areas of greatest biodiversity contribution to people (0-1 score)"
         },
@@ -34,7 +34,7 @@
             "checkboxId": "carbon-layer",
             "hasLegend": false,
             "isVector": false,
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/carbon.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/carbon.pmtiles",
             "dataTablePath": "s3://public-carbon/hex/vulnerable-carbon/**",
             "description": "Above and below-ground carbon vulnerable to release from development"
         },
@@ -48,7 +48,7 @@
             "hasLegend": false,
             "isVector": true,
             "sourceLayer": "ramsar",
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/ramsar.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/ramsar.pmtiles",
             "dataTablePath": "s3://public-wetlands/ramsar/hex/**",
             "description": "Wetlands of International Importance under the Ramsar Convention",
             "filterableProperties": {
@@ -215,7 +215,7 @@
             "hasLegend": false,
             "isVector": true,
             "sourceLayer": "wdpa",
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/wdpa.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/wdpa.pmtiles",
             "dataTablePath": "s3://public-wdpa/hex/**",
             "description": "World Database on Protected Areas showing global protected area boundaries",
             "filterableProperties": {
@@ -299,7 +299,7 @@
             "hasLegend": false,
             "isVector": true,
             "sourceLayer": "hydrobasins_level_06",
-            "sourceUrl": "pmtiles://https://minio.carlboettiger.info/public-pmtiles/hydrobasins_level_06.pmtiles",
+            "sourceUrl": "pmtiles://https://s3-west.nrp-nautilus.io/public-pmtiles/hydrobasins_level_06.pmtiles",
             "dataTablePath": "s3://public-hydrobasins/level_06/hexes/**",
             "description": "Level 6 watershed basins from HydroBASINS showing drainage areas",
             "filterableProperties": {

@@ -52,7 +52,7 @@ Every dataset listed below has:
   - **All Species:** `combined_sr` (default), `amphibians_sr`, `birds_sr`, `mammals_sr`, `reptiles_sr`, `fw_fish_sr`
   - **Threatened Species:** `combined_thr_sr`, `amphibians_thr_sr`, `birds_thr_sr`, `mammals_thr_sr`, `reptiles_thr_sr`, `fw_fish_thr_sr`
   - **Range-Weighted Richness:** `combined_rwr`, `combined_thr_rwr`
-- **COG URLs:** `https://minio.carlboettiger.info/public-iucn/raw/richness/{Layer}_SR_2025.tif` or `{Layer}_THR_SR_2025.tif` for threatened species
+- **COG URLs:** `https://s3-west.nrp-nautilus.io/public-iucn/cog/{layerName}.tif`
 - **Source:** IUCN Red List 2025, <https://www.iucnredlist.org/>
 - **Map Usage:** 
   - Show/hide: `toggle_map_layer` with `layer="species_richness"`
@@ -248,7 +248,7 @@ CREATE OR REPLACE SECRET s3 (
 );
 CREATE OR REPLACE SECRET outputs (
     TYPE S3,
-    ENDPOINT 'minio.carlboettiger.info',
+    ENDPOINT 's3-west.nrp-nautilus.io',
     URL_STYLE 'path',
     SCOPE 's3://public-outputs'
 );

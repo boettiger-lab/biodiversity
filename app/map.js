@@ -473,7 +473,7 @@ window.MapController = {
         // taxon: 'combined', 'amphibians', 'birds', 'mammals', 'reptiles', 'fw_fish'
         const typeCode = speciesType === 'threatened' ? 'thr_sr' : 'sr';
         const layerName = `${taxon}_${typeCode}`;
-        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://minio.carlboettiger.info/public-iucn/raw/richness/${layerName}.tif&rescale=0,800&colormap_name=turbo`;
+        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://s3-west.nrp-nautilus.io/public-iucn/cog/${layerName}.tif&rescale=0,800&colormap_name=turbo`;
     },
 
     // Set species richness filter (taxon and species type)
@@ -587,7 +587,7 @@ map.on('load', function () {
     map.addSource('carbon-cog', {
         'type': 'raster',
         'tiles': [
-            'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
+            'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://s3-west.nrp-nautilus.io/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
         ],
         'tileSize': 256,
         'minzoom': 0,
@@ -764,7 +764,7 @@ function switchBaseLayer(styleName) {
         map.addSource('carbon-cog', {
             'type': 'raster',
             'tiles': [
-                'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://minio.carlboettiger.info/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
+                'https://titiler.nrp-nautilus.io/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=https://s3-west.nrp-nautilus.io/public-carbon/cogs/vulnerable_c_total_2018.tif&colormap_name=reds'
             ],
             'tileSize': 256,
             'minzoom': 0,
