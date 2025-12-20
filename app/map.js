@@ -526,6 +526,10 @@ window.MapController = {
                 // Determine layer ordering: add before wdpa-layer if it exists, otherwise add at end
                 const beforeLayer = window.map.getLayer('wdpa-layer') ? 'wdpa-layer' : undefined;
 
+                // Check checkbox state to determine initial visibility
+                const checkbox = document.getElementById('species-richness-layer');
+                const shouldBeVisible = checkbox && checkbox.checked;
+
                 window.map.addLayer({
                     id: 'species-richness-layer',
                     type: 'raster',
@@ -534,10 +538,7 @@ window.MapController = {
                         'raster-opacity': 0.7
                     },
                     layout: {
-                        visibility: config.layerIds.some(id => {
-                            const layer = window.map.getLayer(id);
-                            return layer && window.map.getLayoutProperty(id, 'visibility') === 'visible';
-                        }) ? 'visible' : 'none'
+                        visibility: shouldBeVisible ? 'visible' : 'none'
                     }
                 }, beforeLayer);
 

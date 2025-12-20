@@ -31,17 +31,16 @@ metadata:
     haproxy.org/timeout-connect: "10s"
     
     # Return CORS headers even on error responses
-    haproxy.org/error-files: "true"
 
 spec:
   ingressClassName: haproxy
   tls:
     - hosts:
-        - biodiversity.nrp-nautilus.io
+        - nature.nrp-nautilus.io
       # Uncomment and add secretName if managing your own certificates
       # secretName: biodiversity-maplibre-tls
   rules:
-    - host: biodiversity.nrp-nautilus.io
+    - host: nature.nrp-nautilus.io
       http:
         paths:
           - path: /
