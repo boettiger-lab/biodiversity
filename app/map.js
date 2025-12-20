@@ -486,7 +486,10 @@ window.MapController = {
         const typeCode = speciesType === 'threatened' ? 'THR_SR' : 'SR';
         const filename = `${taxonName}_${typeCode}_2025.tif`;
 
-        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://s3-west.nrp-nautilus.io/public-iucn/cog/richness/${filename}&rescale=0,800&colormap_name=turbo`;
+        // Use much lower rescale range for threatened species to get better contrast
+        const rescale = speciesType === 'threatened' ? '0,50' : '0,800';
+
+        return `https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@1x?url=https://s3-west.nrp-nautilus.io/public-iucn/cog/richness/${filename}&rescale=${rescale}&colormap_name=turbo`;
     },
 
     // Set species richness filter (taxon and species type)
