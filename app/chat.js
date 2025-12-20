@@ -277,10 +277,9 @@ class BiodiversityChatbot {
             'assistant',
             'Hi! I can help you explore global biodiversity data and control the map. Try asking:\n\n' +
             '* "How much protected area is in India?"\n' +
-            '* "Show threatened amphibian diversity hotspots"\n' +
+            '* "Show threatened amphibian diversity hotspots by protected area"\n' +
             '* "Calculate vulnerable carbon stored in IUCN category Ia areas"\n' +
-            '* "Show state-owned protected areas colored by IUCN category"\n' +
-            '* "Which mammals are found in protected wetlands in Costa Rica?"'
+            '* "Show state-owned protected areas colored by IUCN category"'
         );
     }
 
