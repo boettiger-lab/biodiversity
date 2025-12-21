@@ -54,32 +54,54 @@ Every dataset listed below has:
 **Data:** `s3://public-wdpa/hex/**`  
 **Map Layer:** `wdpa` (vector - PMTiles) ✓ Filterable ✓ Styleable
 
-- **Columns:** OBJECTID, SITE_ID, NAME_ENG, DESIG_ENG, IUCN_CAT, STATUS, STATUS_YR, GOV_TYPE, OWN_TYPE, GIS_AREA, ISO3, h8, h0, [many more...]
 - **Description:** Global protected areas indexed by H3 hexagons
 - **Source:** World Database on Protected Areas (WDPA) Dec 2025, <https://www.protectedplanet.net/>
 - **Map Usage:** 
   - Show/hide: `toggle_map_layer` with `layer="wdpa"`
-  - Filter: `filter_map_layer` with `layer="wdpa"` (e.g., by IUCN_CAT, ISO3, STATUS)
-  - Style: `set_layer_paint` with `layer="wdpa"` (e.g., color by OWN_TYPE, IUCN_CAT)
+  - Filter: `filter_map_layer` with `layer="wdpa"` (e.g., by IUCN_CAT, ISO3, STATUS, REALM)
+  - Style: `set_layer_paint` with `layer="wdpa"` (e.g., color by OWN_TYPE, IUCN_CAT, REALM)
 - **Partitioning:** Hive-partitioned by h0 hex-id
-- **Important:** A single h8 may fall within multiple overlapping protected areas; use `COUNT(DISTINCT h8)` for area calculations
+- **Important:** A single h8 may fall within multiple overlapping protected areas; use `COUNT(DISTINCT h8)` for ALL AREA calculations, such as fraction of a country that is protected.
 
-**Key Filterable Properties:**
-- `IUCN_CAT`: "Ia", "Ib", "II", "III", "IV", "V", "VI", "Not Reported"
-- `ISO3`: 3-letter country code
-- `OWN_TYPE`: "State", "Private", "Community", "Joint", "Not Reported"
-- `GOV_TYPE`: Governance type
-- `STATUS`: "Designated", "Proposed", "Inscribed"
-- `GIS_AREA`: Area in km² (number for comparison filters)
+**Key Columns:**
+- **Identification:**
+  - `SITE_ID`: Unique site identifier (integer)
+  - `NAME_ENG`: English name of protected area
+  - `DESIG_ENG`: Designation in English (e.g., "National Park", "Nature Reserve")
+  
+- **Geographic:**
+  - `ISO3`: 3-letter country code (ISO 3166-1 alpha-3)
+  - `REALM`: **Marine**, **Terrestrial**, or **Coastal** - critical for filtering by environment type
+  - `GIS_AREA`: Area in km² (use for size comparisons)
+  - `GIS_M_AREA`: Marine area in km² (when applicable)
+  
+- **Protection Status:**
+  - `STATUS`: **Designated** (active), **Proposed** (planned), **Inscribed** (UNESCO sites), **Established**, **Adopted**, or **Not Reported**
+  - `STATUS_YR`: Year of designation
+  - `IUCN_CAT`: IUCN management category - **"Ia"**, **"Ib"**, **"II"**, **"III"**, **"IV"**, **"V"**, **"VI"**, or **"Not Reported"**
+  
+- **Governance:**
+  - `GOV_TYPE`: Governance type (e.g., "Federal or national ministry or agency", "State or Provincial Government")
+  - `OWN_TYPE`: **State**, **Private**, **Community**, **Joint**, or **Not Reported**
+  
+- **Management:**
+  - `NO_TAKE`: No-take zone status for marine areas - **All**, **Part**, **None**, **Not Applicable** (terrestrial), **Not Reported**
+  - `DESIG_TYPE`: **National**, **International** (e.g., UNESCO, Ramsar), **Regional**, or **Not Applicable**
+  - `VERIF`: Verification status - **State Verified**, **Expert Verified**, **Not Reported**
+  
+- **Spatial:**
+  - `h8`: H3 hexagon ID (resolution 8)
+  - `h0`: H3 hexagon ID (resolution 0) for partitioning
 
 **IUCN Categories:**
-- **Ia**: Strict Nature Reserve - managed for science
-- **Ib**: Wilderness Area - large unmodified areas
-- **II**: National Park - large-scale ecological processes
-- **III**: Natural Monument - specific natural feature
-- **IV**: Habitat/Species Management - requires active management
-- **V**: Protected Landscape/Seascape - cultural/ecological value
-- **VI**: Sustainable Use - sustainable resource management
+- **Ia**: Strict Nature Reserve - managed mainly for science
+- **Ib**: Wilderness Area - large unmodified or slightly modified areas
+- **II**: National Park - large-scale ecological processes with recreation
+- **III**: Natural Monument - specific outstanding natural feature
+- **IV**: Habitat/Species Management - requires active management interventions
+- **V**: Protected Landscape/Seascape - interaction of people and nature, cultural value
+- **VI**: Sustainable Use - conservation with sustainable resource use
+- **Not Reported**: IUCN category not assigned or unknown
 
 ### 4. Country Boundaries
 **Data:** `s3://public-overturemaps/hex/countries.parquet`  
