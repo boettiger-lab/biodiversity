@@ -790,11 +790,25 @@ class BiodiversityChatbot {
 
             console.log('[LLM] Using API key from model config');
 
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestPayload)
-            });
+            // Set up 5-minute timeout for LLM requests
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes
+
+            try {
+                var response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestPayload),
+                    signal: controller.signal
+                });
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('Request timed out after 5 minutes');
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeoutId);
+            }
 
             const elapsed = Date.now() - startTime;
             console.log(`[LLM] Response received after ${elapsed}ms, status: ${response.status}`);
