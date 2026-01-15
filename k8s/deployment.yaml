@@ -39,6 +39,8 @@ spec:
         ports:
         - containerPort: 80
         env:
+        - name: TMPDIR
+          value: "/tmp"
         - name: MCP_SERVER_URL
           value: "https://biodiversity-mcp.nrp-nautilus.io/sse"
         - name: LLM_ENDPOINT

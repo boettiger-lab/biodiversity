@@ -244,7 +244,6 @@ set_species_richness_filter({species_type: "all", taxon: "mammals"})
 SET THREADS=100;
 SET preserve_insertion_order=false;
 SET enable_object_cache=true;
-SET temp_directory='/tmp';
 
 -- Extensions
 INSTALL httpfs; LOAD httpfs;
