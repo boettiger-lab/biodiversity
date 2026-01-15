@@ -262,7 +262,7 @@ CREATE OR REPLACE SECRET outputs (
     TYPE S3,
     ENDPOINT 's3-west.nrp-nautilus.io',
     URL_STYLE 'path',
-    SCOPE 's3://public-outputs'
+    SCOPE 's3://public-output'
 );
 
 -- Your SELECT or COPY query here...
@@ -275,7 +275,7 @@ COPY (SELECT ...)
 TO 's3://public-outputs/biodiversity/filename-2025-01-01.csv'
 (FORMAT CSV, HEADER, OVERWRITE_OR_IGNORE);
 ```
-Then provide download link: `https://minio.carlboettiger.info/public-outputs/biodiversity/filename-2025-01-01.csv`
+Then provide download link: `https://s3-west.nrp-nautilus.io/public-output/biodiversity/filename-2025-01-01.csv`
 
 ## H3 Geospatial Indexing
 
