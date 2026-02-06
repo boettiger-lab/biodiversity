@@ -9,7 +9,7 @@
 
 // Import MCP SDK for proper SSE communication
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
 // Import generic map control modules
 import { layerRegistry } from './layer-registry.js';
@@ -125,8 +125,8 @@ class BiodiversityChatbot {
         try {
             console.log('🔌 Initializing MCP connection...');
 
-            // Create SSE transport
-            const transport = new SSEClientTransport(new URL(this.mcpServerUrl));
+            // Create Streamable HTTP transport
+            const transport = new StreamableHTTPClientTransport(new URL(this.mcpServerUrl));
 
             // Create MCP client
             this.mcpClient = new Client({
