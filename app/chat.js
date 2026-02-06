@@ -1051,7 +1051,7 @@ class BiodiversityChatbot {
             const result = await this.mcpClient.callTool({
                 name: 'query',
                 arguments: {
-                    query: sqlQuery
+                    sql_query: sqlQuery  // Match server's Python function parameter name
                 }
             });
 
