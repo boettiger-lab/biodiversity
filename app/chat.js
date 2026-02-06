@@ -384,7 +384,7 @@ class BiodiversityChatbot {
                     `;
                 } else {
                     // Format MCP tool call (SQL query)
-                    const sqlQuery = functionArgs.query || 'No query provided';
+                    const sqlQuery = functionArgs.sql_query || functionArgs.query || 'No query provided';
                     content += `
                         <div class="tool-call-item">
                             <details>
@@ -926,13 +926,15 @@ class BiodiversityChatbot {
                     } else {
                         // This is an MCP tool (database query)
                         // Capture the SQL query
-                        if (functionArgs.query) {
-                            this.currentTurnQueries.push(functionArgs.query);
+                        const sqlQuery = functionArgs.sql_query || functionArgs.query;
+
+                        if (sqlQuery) {
+                            this.currentTurnQueries.push(sqlQuery);
                             console.log(`[SQL] ✅ SQL query ${this.currentTurnQueries.length} captured`);
                         }
 
                         // Check if the query argument is missing or empty
-                        if (!functionArgs.query || functionArgs.query.trim() === '') {
+                        if (!sqlQuery || sqlQuery.trim() === '') {
                             console.warn('[LLM] ⚠️  WARNING: Tool call missing or empty "query" argument!');
                             const errorMsg = "Error: The 'query' argument was missing or empty. Please provide a valid SQL query.";
                             currentTurnMessages.push({
@@ -948,7 +950,7 @@ class BiodiversityChatbot {
                         console.log('[MCP] Executing query via MCP...');
                         let queryResult;
                         try {
-                            queryResult = await this.executeMCPQuery(functionArgs.query);
+                            queryResult = await this.executeMCPQuery(sqlQuery);
                             console.log(`[SQL] ✅ Query ${this.currentTurnQueries.length} completed`);
                             toolResults.push(queryResult);
                         } catch (err) {
