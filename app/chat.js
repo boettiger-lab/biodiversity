@@ -1030,13 +1030,18 @@ class BiodiversityChatbot {
     async executeMCPQuery(sqlQuery, retryCount = 0) {
         const maxRetries = 2;
 
+        // For stateless HTTP servers, reinitialize connection before each query
+        // This ensures a fresh session since the server doesn't maintain state
+        console.log('🔄 Reinitializing MCP client for stateless HTTP...');
+        try {
+            await this.initMCP();
+        } catch (initError) {
+            console.error('❌ Failed to initialize MCP client:', initError);
+            throw new Error('Database connection unavailable. Please refresh the page.');
+        }
+
         if (!this.mcpClient || !this.mcpConnected) {
-            console.log('🔄 MCP not connected, attempting to reconnect...');
-            try {
-                await this.reconnectMCP();
-            } catch (error) {
-                throw new Error('Database connection unavailable. Please refresh the page.');
-            }
+            throw new Error('Database connection unavailable. Please refresh the page.');
         }
 
         console.log('🔧 Executing MCP query:', sqlQuery.substring(0, 100) + '...');
