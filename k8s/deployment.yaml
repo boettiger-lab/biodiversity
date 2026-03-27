@@ -5,7 +5,7 @@ metadata:
   labels:
     app: biodiversity-maplibre
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -27,14 +27,14 @@ spec:
         - -c
         - |
           git clone --depth 1 https://github.com/boettiger-lab/biodiversity.git /tmp/repo
-          # Copy all files except config.json (will be generated from template)
-          cd /tmp/repo/app
-          find . -type f ! -name 'config.json' -exec cp --parents {} /usr/share/nginx/html/ \;
+          cp /tmp/repo/index.html /usr/share/nginx/html/
+          cp /tmp/repo/layers-input.json /usr/share/nginx/html/
+          cp /tmp/repo/system-prompt.md /usr/share/nginx/html/
         volumeMounts:
         - name: website-content
           mountPath: /usr/share/nginx/html
       containers:
-      - name: biodiversity-maplibre
+      - name: nginx
         image: nginx:alpine
         ports:
         - containerPort: 80
@@ -50,6 +50,8 @@ spec:
             secretKeyRef:
               name: llm-proxy-secrets
               key: proxy-key
+        - name: NIMBUS_ENDPOINT
+          value: "https://llm-proxy.nrp-nautilus.io/v1"
         - name: NIMBUS_API_KEY
           valueFrom:
             secretKeyRef:
@@ -60,15 +62,18 @@ spec:
             secretKeyRef:
               name: openrouter-key
               key: OPENROUTER_KEY
+        - name: MCP_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: mcp-private-secrets
+              key: mcp-auth-token
+              optional: true
         command:
         - sh
         - -c
         - |
-          # Install envsubst for environment variable substitution
           apk add --no-cache gettext
-          # Substitute environment variables in config template
           envsubst < /config/config.template.json > /usr/share/nginx/html/config.json
-          # Start nginx
           nginx -g 'daemon off;'
         resources:
           requests:
@@ -91,14 +96,12 @@ spec:
             port: 80
           initialDelaySeconds: 10
           periodSeconds: 30
-          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /health
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 10
-          timeoutSeconds: 5
       volumes:
       - name: website-content
         emptyDir: {}

@@ -1,0 +1,193 @@
+{
+    "catalog": "https://s3-west.nrp-nautilus.io/public-data/stac/catalog.json",
+    "titiler_url": "https://titiler.nrp-nautilus.io",
+    "mcp_url": "https://duckdb-mcp.nrp-nautilus.io/mcp",
+    "view": {
+        "center": [10, 20],
+        "zoom": 2
+    },
+    "llm": {
+        "user_provided": true,
+        "default_endpoint": "https://openrouter.ai/api/v1",
+        "models": [
+            { "value": "qwen/qwen3-235b-a22b", "label": "Qwen3 235B" },
+            { "value": "moonshotai/kimi-k2", "label": "Kimi K2" },
+            { "value": "minimax/minimax-m1", "label": "MiniMax M1" },
+            { "value": "anthropic/claude-sonnet-4", "label": "Claude Sonnet" },
+            { "value": "google/gemini-2.5-flash", "label": "Gemini Flash" }
+        ]
+    },
+    "welcome": {
+        "message": "Hi! I can help you explore global biodiversity data. Try asking:",
+        "examples": [
+            "Tell me about the datasets you have access to.",
+            "Show the protected areas on the map.",
+            "Which countries have the most Ramsar wetland sites?",
+            "Show me species richness for amphibians.",
+            "What are the top 10 ecoregions by vulnerable carbon?"
+        ]
+    },
+    "collections": [
+        {
+            "collection_id": "wdpa-december-2025",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-wdpa/stac-collection.json",
+            "assets": [
+                {
+                    "id": "wdpa-pmtiles",
+                    "display_name": "Protected Areas (WDPA)",
+                    "group": "Conservation",
+                    "visible": false,
+                    "default_style": {
+                        "fill-color": [
+                            "match", ["get", "IUCN_CAT"],
+                            "Ia", "#1a5e1f",
+                            "Ib", "#26633A",
+                            "II",  "#2d8a3e",
+                            "III", "#3E9C47",
+                            "IV",  "#7EB3D3",
+                            "V",   "#a8d5ba",
+                            "VI",  "#c6e2d0",
+                            "#BDBDBD"
+                        ],
+                        "fill-opacity": 0.6
+                    },
+                    "tooltip_fields": ["NAME", "DESIG_ENG", "IUCN_CAT", "ISO3", "STATUS_YR", "GIS_AREA"]
+                }
+            ]
+        },
+        {
+            "collection_id": "wetlands-global-unified",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-wetlands/stac-collection.json",
+            "assets": [
+                {
+                    "id": "ramsar-pmtiles",
+                    "display_name": "Ramsar Wetland Sites",
+                    "group": "Conservation",
+                    "visible": false,
+                    "default_style": {
+                        "fill-color": "#2196F3",
+                        "fill-opacity": 0.5
+                    },
+                    "tooltip_fields": ["Site name", "Country", "Area (ha)", "Designation date"]
+                },
+                {
+                    "id": "glwd-main-class-cog",
+                    "display_name": "Wetland Type (GLWD)",
+                    "group": "Land Cover",
+                    "legend_type": "categorical"
+                }
+            ]
+        },
+        {
+            "collection_id": "irrecoverable-carbon",
+            "assets": [
+                {
+                    "id": "v2-vulnerable-2024-cog",
+                    "display_name": "Vulnerable Carbon (2024)",
+                    "group": "Carbon",
+                    "colormap": "reds",
+                    "rescale": "0,150",
+                    "legend_label": "Mg C / ha"
+                }
+            ]
+        },
+        {
+            "collection_id": "iucn-richness-2025",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-iucn/stac-collection.json",
+            "assets": [
+                {
+                    "id": "combined-sr-cog",
+                    "display_name": "Species Richness (All)",
+                    "group": "Biodiversity",
+                    "colormap": "ylgnbu",
+                    "rescale": "0,500",
+                    "legend_label": "Species count"
+                },
+                {
+                    "id": "amphibians-sr-cog",
+                    "display_name": "Amphibian Richness",
+                    "group": "Biodiversity",
+                    "colormap": "ylgnbu",
+                    "rescale": "0,100",
+                    "legend_label": "Species count"
+                },
+                {
+                    "id": "birds-sr-cog",
+                    "display_name": "Bird Richness",
+                    "group": "Biodiversity",
+                    "colormap": "ylgnbu",
+                    "rescale": "0,500",
+                    "legend_label": "Species count"
+                },
+                {
+                    "id": "mammals-sr-cog",
+                    "display_name": "Mammal Richness",
+                    "group": "Biodiversity",
+                    "colormap": "ylgnbu",
+                    "rescale": "0,200",
+                    "legend_label": "Species count"
+                },
+                {
+                    "id": "reptiles-sr-cog",
+                    "display_name": "Reptile Richness",
+                    "group": "Biodiversity",
+                    "colormap": "ylgnbu",
+                    "rescale": "0,100",
+                    "legend_label": "Species count"
+                }
+            ]
+        },
+        {
+            "collection_id": "ncp-biodiversity",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-ncp/stac-collection.json",
+            "assets": [
+                {
+                    "id": "ncp-biod-nathab-cog",
+                    "display_name": "Biodiversity & Natural Habitat (NCP)",
+                    "group": "Biodiversity",
+                    "colormap": "viridis",
+                    "rescale": "0,1",
+                    "legend_label": "NCP Score"
+                }
+            ]
+        },
+        {
+            "collection_id": "hydrobasins-v1c",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-hydrobasins/stac-collection.json",
+            "assets": [
+                {
+                    "id": "unified-pmtiles",
+                    "display_name": "Watersheds (HydroBASINS L6)",
+                    "group": "Boundaries",
+                    "visible": false,
+                    "default_style": {
+                        "fill-color": "#4FC3F7",
+                        "fill-opacity": 0.15,
+                        "line-color": "#0288D1",
+                        "line-width": 0.5
+                    },
+                    "tooltip_fields": ["HYBAS_ID", "SUB_AREA", "UP_AREA"]
+                }
+            ]
+        },
+        {
+            "collection_id": "wwf-ecoregions-2017",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-ecoregion/stac-collection.json",
+            "assets": [
+                {
+                    "id": "ecoregion-pmtiles",
+                    "display_name": "WWF Ecoregions",
+                    "group": "Boundaries",
+                    "visible": false,
+                    "default_style": {
+                        "fill-color": "#8BC34A",
+                        "fill-opacity": 0.3,
+                        "line-color": "#558B2F",
+                        "line-width": 0.5
+                    },
+                    "tooltip_fields": ["ECO_NAME", "BIOME_NAME", "REALM"]
+                }
+            ]
+        }
+    ]
+}

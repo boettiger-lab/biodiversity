@@ -1,3 +1,4 @@
+# LLM config template — API keys injected from k8s secrets at deploy time
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,29 +7,18 @@ data:
   config.template.json: |
     {
         "mcp_server_url": "${MCP_SERVER_URL}",
-        "llm_model": "glm-4.7",
+        "mcp_auth_token": "${MCP_AUTH_TOKEN}",
+        "llm_model": "nimbus",
         "llm_models": [
+            {
+                "value": "nimbus",
+                "label": "NRP Nimbus",
+                "endpoint": "${NIMBUS_ENDPOINT}",
+                "api_key": "${NIMBUS_API_KEY}"
+            },
             {
                 "value": "glm-4.7",
                 "label": "NRP GLM-4.7",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "minimax-m2",
-                "label": "NRP minimax-m2",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "gpt-oss",
-                "label": "NRP gpt-oss-120b",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "nvidia/nemotron-3-nano-30b-a3b:free",
-                "label": "nemotron3-nano",
                 "endpoint": "${LLM_ENDPOINT}",
                 "api_key": "${PROXY_KEY}"
             },
@@ -39,46 +29,28 @@ data:
                 "api_key": "${PROXY_KEY}"
             },
             {
+                "value": "gpt-oss",
+                "label": "NRP GPT-OSS 120B",
+                "endpoint": "${LLM_ENDPOINT}",
+                "api_key": "${PROXY_KEY}"
+            },
+            {
                 "value": "kimi",
-                "label": "NRP Kimi",
+                "label": "NRP Kimi K2.5",
                 "endpoint": "${LLM_ENDPOINT}",
                 "api_key": "${PROXY_KEY}"
             },
             {
-                "value": "mistralai/devstral-2512:free",
-                "label": "devstral",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "amazon/nova-2-lite-v1:free",
-                "label": "nova-2-lite",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "openai/gpt-oss-120b:free",
-                "label": "gpt-oss-120b",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "anthropic/claude-sonnet-4.5",
-                "label": "claude",
-                "endpoint": "${LLM_ENDPOINT}",
-                "api_key": "${PROXY_KEY}"
-            },
-            {
-                "value": "qwen/qwen3-next-80b-a3b-thinking",
-                "label": "qwen3-next-80b",
+                "value": "minimax-m2",
+                "label": "NRP MiniMax M2.5",
                 "endpoint": "${LLM_ENDPOINT}",
                 "api_key": "${PROXY_KEY}"
             }
-            
         ]
     }
-    
+
 ---
+# Nginx configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -92,21 +64,17 @@ data:
         root /usr/share/nginx/html;
         index index.html;
 
-        # Enable CORS for API calls from the browser
         add_header Access-Control-Allow-Origin *;
         add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
         add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept";
-        
-        # Serve static files - NO caching for dev environment
+
         location / {
             try_files $uri $uri/ /index.html;
-            # Disable all caching for development
             add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
             add_header Pragma "no-cache";
             add_header Expires "0";
         }
 
-        # Health check endpoint
         location /health {
             access_log off;
             return 200 "healthy\n";
