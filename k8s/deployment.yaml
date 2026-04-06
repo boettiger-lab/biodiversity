@@ -52,7 +52,6 @@ spec:
               key: proxy-key
         - name: NIMBUS_ENDPOINT
           value: "https://open-llm-proxy.nrp-nautilus.io/v1"
-              optional: true
         command:
         - sh
         - -c
