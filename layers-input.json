@@ -24,6 +24,7 @@
             "Show the protected areas on the map.",
             "Which countries have the most Ramsar wetland sites?",
             "Show me species richness for amphibians.",
+            "Map the range of the California red-legged frog.",
             "What are the top 10 ecoregions by vulnerable carbon?"
         ]
     },
@@ -198,6 +199,11 @@
         {
             "collection_id": "gbif-derived",
             "collection_url": "https://s3-west.nrp-nautilus.io/public-gbif/stac-collection.json",
+            "assets": []
+        },
+        {
+            "collection_id": "inaturalist-ranges",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-inat/stac-collection.json",
             "assets": []
         },
         {
