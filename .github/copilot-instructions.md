@@ -51,7 +51,7 @@ Every dataset listed below has:
 - **Note:** Zero-value cells (areas with no species) have been filtered out for efficiency
 
 ### 3. Protected Areas (WDPA)
-**Data:** `s3://public-wdpa/hex/**`  
+**Data:** `s3://public-wdpa/wdpa-december-2025/hex/**`  
 **Map Layer:** `wdpa` (vector - PMTiles) ✓ Filterable ✓ Styleable
 
 - **Columns:** OBJECTID, SITE_ID, NAME_ENG, DESIG_ENG, IUCN_CAT, STATUS, STATUS_YR, GOV_TYPE, OWN_TYPE, GIS_AREA, ISO3, h8, h0, [many more...]
@@ -278,7 +278,7 @@ Some datasets only have coarse hexagons (h0-h4) while others have fine (h8). Use
 ```sql
 -- Convert h8 to h4 for joining
 SELECT * 
-FROM read_parquet('s3://public-wdpa/hex/**') w
+FROM read_parquet('s3://public-wdpa/wdpa-december-2025/hex/**') w
 JOIN read_parquet('s3://some-coarse-dataset/hex/**') pos
   ON h3_cell_to_parent(w.h8, 4) = pos.h4 AND w.h0 = pos.h0
 ```
