@@ -30,8 +30,8 @@
     },
     "collections": [
         {
-            "collection_id": "wdpa-december-2025",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-wdpa/wdpa-december-2025/stac-collection.json",
+            "collection_id": "wdpa",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-wdpa/wdpa/stac-collection.json",
             "assets": [
                 {
                     "id": "wdpa-pmtiles",
@@ -87,6 +87,7 @@
         },
         {
             "collection_id": "irrecoverable-carbon",
+            "collection_url": "https://s3-west.nrp-nautilus.io/public-carbon/stac-collection.json",
             "assets": [
                 {
                     "id": "v2-vulnerable-2024-cog",
