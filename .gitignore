@@ -52,3 +52,6 @@ secrets.yaml
 *.tmp
 duck.db
 .streamlit
+
+# Claude Code local/agent state
+.claude/
