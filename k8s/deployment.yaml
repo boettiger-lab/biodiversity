@@ -55,8 +55,8 @@ spec:
         - name: PROXY_KEY
           valueFrom:
             secretKeyRef:
-              name: open-llm-proxy-secrets
-              key: proxy-key
+              name: open-llm-proxy-app-keys
+              key: biodiversity-maplibre
               optional: true
         command:
         - sh
