@@ -42,20 +42,6 @@
                     "display_name": "Protected Areas (WDPA)",
                     "group": "Conservation",
                     "visible": false,
-                    "default_style": {
-                        "fill-color": [
-                            "match", ["get", "IUCN_CAT"],
-                            "Ia", "#1a5e1f",
-                            "Ib", "#26633A",
-                            "II",  "#2d8a3e",
-                            "III", "#3E9C47",
-                            "IV",  "#7EB3D3",
-                            "V",   "#a8d5ba",
-                            "VI",  "#c6e2d0",
-                            "#BDBDBD"
-                        ],
-                        "fill-opacity": 0.6
-                    },
                     "tooltip_fields": ["NAME", "DESIG_ENG", "IUCN_CAT", "ISO3", "STATUS_YR", "GIS_AREA"]
                 }
             ]
@@ -69,10 +55,6 @@
                     "display_name": "Ramsar Wetland Sites",
                     "group": "Conservation",
                     "visible": false,
-                    "default_style": {
-                        "fill-color": "#2196F3",
-                        "fill-opacity": 0.5
-                    },
                     "tooltip_fields": ["Site name", "Country", "Area (ha)", "Designation date"]
                 }
             ]
@@ -172,12 +154,6 @@
                     "display_name": "Watersheds (HydroBASINS L6)",
                     "group": "Boundaries",
                     "visible": false,
-                    "default_style": {
-                        "fill-color": "#4FC3F7",
-                        "fill-opacity": 0.15,
-                        "line-color": "#0288D1",
-                        "line-width": 0.5
-                    },
                     "tooltip_fields": ["HYBAS_ID", "SUB_AREA", "UP_AREA"]
                 }
             ]
@@ -191,12 +167,6 @@
                     "display_name": "WWF Ecoregions",
                     "group": "Boundaries",
                     "visible": false,
-                    "default_style": {
-                        "fill-color": "#8BC34A",
-                        "fill-opacity": 0.3,
-                        "line-color": "#558B2F",
-                        "line-width": 0.5
-                    },
                     "tooltip_fields": ["ECO_NAME", "BIOME_NAME", "REALM"]
                 }
             ]
@@ -219,16 +189,7 @@
                 {
                     "id": "countries-pmtiles",
                     "display_name": "Countries",
-                    "visible": false,
-                    "default_style": {
-                        "fill-color": "#6A1B9A",
-                        "fill-opacity": 0.03
-                    },
-                    "outline_style": {
-                        "line-color": "#6A1B9A",
-                        "line-width": 1.2,
-                        "line-opacity": 0.7
-                    }
+                    "visible": false
                 }
             ]
         },
@@ -240,16 +201,7 @@
                 {
                     "id": "regions-pmtiles",
                     "display_name": "Regions / States",
-                    "visible": false,
-                    "default_style": {
-                        "fill-color": "#6A1B9A",
-                        "fill-opacity": 0.03
-                    },
-                    "outline_style": {
-                        "line-color": "#6A1B9A",
-                        "line-width": 0.8,
-                        "line-opacity": 0.6
-                    }
+                    "visible": false
                 }
             ]
         },
@@ -261,16 +213,7 @@
                 {
                     "id": "counties-pmtiles",
                     "display_name": "Counties",
-                    "visible": false,
-                    "default_style": {
-                        "fill-color": "#6A1B9A",
-                        "fill-opacity": 0.03
-                    },
-                    "outline_style": {
-                        "line-color": "#6A1B9A",
-                        "line-width": 0.4,
-                        "line-opacity": 0.5
-                    }
+                    "visible": false
                 }
             ]
         }
