@@ -66,8 +66,7 @@
                 {
                     "id": "glwd-main-class-cog",
                     "display_name": "Wetland Type (GLWD)",
-                    "group": "Land Cover",
-                    "legend_type": "categorical"
+                    "group": "Land Cover"
                 }
             ]
         },
@@ -79,8 +78,6 @@
                     "id": "v2-vulnerable-2024-cog",
                     "display_name": "Vulnerable Carbon (2024)",
                     "group": "Carbon",
-                    "colormap": "reds",
-                    "rescale": "0,150",
                     "legend_label": "Mg C / ha"
                 }
             ]
@@ -93,40 +90,30 @@
                     "id": "combined-sr-cog",
                     "display_name": "Species Richness (All)",
                     "group": "Biodiversity",
-                    "colormap": "ylgnbu",
-                    "rescale": "0,500",
                     "legend_label": "Species count"
                 },
                 {
                     "id": "amphibians-sr-cog",
                     "display_name": "Amphibian Richness",
                     "group": "Biodiversity",
-                    "colormap": "ylgnbu",
-                    "rescale": "0,100",
                     "legend_label": "Species count"
                 },
                 {
                     "id": "birds-sr-cog",
                     "display_name": "Bird Richness",
                     "group": "Biodiversity",
-                    "colormap": "ylgnbu",
-                    "rescale": "0,500",
                     "legend_label": "Species count"
                 },
                 {
                     "id": "mammals-sr-cog",
                     "display_name": "Mammal Richness",
                     "group": "Biodiversity",
-                    "colormap": "ylgnbu",
-                    "rescale": "0,200",
                     "legend_label": "Species count"
                 },
                 {
                     "id": "reptiles-sr-cog",
                     "display_name": "Reptile Richness",
                     "group": "Biodiversity",
-                    "colormap": "ylgnbu",
-                    "rescale": "0,100",
                     "legend_label": "Species count"
                 }
             ]
