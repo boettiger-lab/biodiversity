@@ -203,6 +203,7 @@
                     "visible": false
                 }
             ]
-        }
+        },
+        { "collection_id": "mobi-species-richness-all", "collection_url": "https://s3-west.nrp-nautilus.io/public-mobi/mobi-species-richness-all/stac-collection.json", "assets": [] }
     ]
 }
