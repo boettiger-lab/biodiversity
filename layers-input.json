@@ -1,209 +1,269 @@
 {
-    "sidebar": {
-        "enabled": true,
-        "chat_title": "Chat"
-    },
-    "catalog": "https://s3-west.nrp-nautilus.io/public-data/stac/catalog.json",
-    "titiler_url": "https://titiler.nrp-nautilus.io",
-    "mcp_url": "https://duckdb-mcp.nrp-nautilus.io/mcp",
-    "view": {
-        "center": [10, 20],
-        "zoom": 2
-    },
-    "llm": {
-        "user_provided": true,
-        "default_endpoint": "https://openrouter.ai/api/v1",
-        "models": [
-            { "value": "qwen/qwen3-235b-a22b", "label": "Qwen3 235B" },
-            { "value": "moonshotai/kimi-k2", "label": "Kimi K2" },
-            { "value": "minimax/minimax-m1", "label": "MiniMax M1" },
-            { "value": "anthropic/claude-sonnet-5", "label": "Claude Sonnet 5" },
-            { "value": "google/gemini-2.5-flash", "label": "Gemini Flash" }
-        ]
-    },
-    "welcome": {
-        "message": "Hi! I can help you explore global biodiversity data. Try asking:",
-        "examples": [
-            "Tell me about the datasets you have access to.",
-            "Show the protected areas on the map.",
-            "Which countries have the most Ramsar wetland sites?",
-            "Show me species richness for amphibians.",
-            "Map the range of the California red-legged frog.",
-            "What are the top 10 ecoregions by vulnerable carbon?"
-        ]
-    },
-    "collections": [
-        {
-            "collection_id": "wdpa",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-wdpa/wdpa/stac-collection.json",
-            "assets": [
-                {
-                    "id": "wdpa-pmtiles",
-                    "display_name": "Protected Areas (WDPA)",
-                    "group": "Conservation",
-                    "visible": false,
-                    "tooltip_fields": ["NAME", "DESIG_ENG", "IUCN_CAT", "ISO3", "STATUS_YR", "GIS_AREA"]
-                }
-            ]
-        },
-        {
-            "collection_id": "wetlands-ramsar",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-wetlands/ramsar/stac-collection.json",
-            "assets": [
-                {
-                    "id": "ramsar-pmtiles",
-                    "display_name": "Ramsar Wetland Sites",
-                    "group": "Conservation",
-                    "visible": false,
-                    "tooltip_fields": ["Site name", "Country", "Area (ha)", "Designation date"]
-                }
-            ]
-        },
-        {
-            "collection_id": "wetlands-glwd-v2",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-wetlands/glwd/stac-collection.json",
-            "assets": [
-                {
-                    "id": "glwd-main-class-cog",
-                    "display_name": "Wetland Type (GLWD)",
-                    "group": "Land Cover"
-                }
-            ]
-        },
-        {
-            "collection_id": "irrecoverable-carbon",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-carbon/stac-collection.json",
-            "assets": [
-                {
-                    "id": "v2-vulnerable-2024-cog",
-                    "display_name": "Vulnerable Carbon (2024)",
-                    "group": "Carbon",
-                    "legend_label": "Mg C / ha"
-                }
-            ]
-        },
-        {
-            "collection_id": "iucn-richness-2025",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-iucn/stac-collection.json",
-            "assets": [
-                {
-                    "id": "combined-sr-cog",
-                    "display_name": "Species Richness (All)",
-                    "group": "Biodiversity",
-                    "legend_label": "Species count"
-                },
-                {
-                    "id": "amphibians-sr-cog",
-                    "display_name": "Amphibian Richness",
-                    "group": "Biodiversity",
-                    "legend_label": "Species count"
-                },
-                {
-                    "id": "birds-sr-cog",
-                    "display_name": "Bird Richness",
-                    "group": "Biodiversity",
-                    "legend_label": "Species count"
-                },
-                {
-                    "id": "mammals-sr-cog",
-                    "display_name": "Mammal Richness",
-                    "group": "Biodiversity",
-                    "legend_label": "Species count"
-                },
-                {
-                    "id": "reptiles-sr-cog",
-                    "display_name": "Reptile Richness",
-                    "group": "Biodiversity",
-                    "legend_label": "Species count"
-                }
-            ]
-        },
-        {
-            "collection_id": "ncp-biodiversity-indicators",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-ncp/biodiversity-indicators/stac-collection.json",
-            "assets": [
-                {
-                    "id": "ncp-biod-nathab-cog",
-                    "display_name": "Biodiversity & Natural Habitat (NCP)",
-                    "group": "Biodiversity",
-                    "colormap": "viridis",
-                    "rescale": "0,1",
-                    "legend_label": "NCP Score"
-                }
-            ]
-        },
-        {
-            "collection_id": "hydrobasins-v1c",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-hydrobasins/stac-collection.json",
-            "assets": [
-                {
-                    "id": "unified-pmtiles",
-                    "display_name": "Watersheds (HydroBASINS L6)",
-                    "group": "Boundaries",
-                    "visible": false,
-                    "tooltip_fields": ["HYBAS_ID", "SUB_AREA", "UP_AREA"]
-                }
-            ]
-        },
-        {
-            "collection_id": "wwf-ecoregions-2017",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-ecoregion/wwf-ecoregions-2017/stac-collection.json",
-            "assets": [
-                {
-                    "id": "ecoregion-pmtiles",
-                    "display_name": "WWF Ecoregions",
-                    "group": "Boundaries",
-                    "visible": false,
-                    "tooltip_fields": ["ECO_NAME", "BIOME_NAME", "REALM"]
-                }
-            ]
-        },
-        {
-            "collection_id": "gbif-derived",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-gbif/stac-collection.json",
-            "assets": []
-        },
-        {
-            "collection_id": "inaturalist-ranges",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-inat/stac-collection.json",
-            "assets": []
-        },
-        {
-            "collection_id": "overture-divisions-countries-2026-02-18",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/countries/stac-collection.json",
-            "group": { "name": "Administrative Boundaries", "collapsed": true },
-            "assets": [
-                {
-                    "id": "countries-pmtiles",
-                    "display_name": "Countries",
-                    "visible": false
-                }
-            ]
-        },
-        {
-            "collection_id": "overture-divisions-regions-2026-02-18",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/regions/stac-collection.json",
-            "group": { "name": "Administrative Boundaries", "collapsed": true },
-            "assets": [
-                {
-                    "id": "regions-pmtiles",
-                    "display_name": "Regions / States",
-                    "visible": false
-                }
-            ]
-        },
-        {
-            "collection_id": "overture-divisions-counties-2026-02-18",
-            "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/counties/stac-collection.json",
-            "group": { "name": "Administrative Boundaries", "collapsed": true },
-            "assets": [
-                {
-                    "id": "counties-pmtiles",
-                    "display_name": "Counties",
-                    "visible": false
-                }
-            ]
-        },
-        { "collection_id": "mobi-species-richness-all", "collection_url": "https://s3-west.nrp-nautilus.io/public-mobi/mobi-species-richness-all/stac-collection.json", "assets": [] }
+  "sidebar": {
+    "enabled": true,
+    "chat_title": "Chat"
+  },
+  "catalog": "https://s3-west.nrp-nautilus.io/public-data/stac/catalog.json",
+  "titiler_url": "https://titiler.nrp-nautilus.io",
+  "view": {
+    "center": [
+      10,
+      20
+    ],
+    "zoom": 2
+  },
+  "llm": {
+    "user_provided": true,
+    "default_endpoint": "https://openrouter.ai/api/v1",
+    "models": [
+      {
+        "value": "qwen/qwen3-235b-a22b",
+        "label": "Qwen3 235B"
+      },
+      {
+        "value": "moonshotai/kimi-k2",
+        "label": "Kimi K2"
+      },
+      {
+        "value": "minimax/minimax-m1",
+        "label": "MiniMax M1"
+      },
+      {
+        "value": "anthropic/claude-sonnet-5",
+        "label": "Claude Sonnet 5"
+      },
+      {
+        "value": "google/gemini-2.5-flash",
+        "label": "Gemini Flash"
+      }
     ]
+  },
+  "welcome": {
+    "message": "Hi! I can help you explore global biodiversity data. Try asking:",
+    "examples": [
+      "Tell me about the datasets you have access to.",
+      "Show the protected areas on the map.",
+      "Which countries have the most Ramsar wetland sites?",
+      "Show me species richness for amphibians.",
+      "Map the range of the California red-legged frog.",
+      "What are the top 10 ecoregions by vulnerable carbon?"
+    ]
+  },
+  "collections": [
+    {
+      "collection_id": "wdpa",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-wdpa/wdpa/stac-collection.json",
+      "assets": [
+        {
+          "id": "wdpa-pmtiles",
+          "display_name": "Protected Areas (WDPA)",
+          "group": "Conservation",
+          "visible": false,
+          "tooltip_fields": [
+            "NAME",
+            "DESIG_ENG",
+            "IUCN_CAT",
+            "ISO3",
+            "STATUS_YR",
+            "GIS_AREA"
+          ]
+        }
+      ]
+    },
+    {
+      "collection_id": "wetlands-ramsar",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-wetlands/ramsar/stac-collection.json",
+      "assets": [
+        {
+          "id": "ramsar-pmtiles",
+          "display_name": "Ramsar Wetland Sites",
+          "group": "Conservation",
+          "visible": false,
+          "tooltip_fields": [
+            "Site name",
+            "Country",
+            "Area (ha)",
+            "Designation date"
+          ]
+        }
+      ]
+    },
+    {
+      "collection_id": "wetlands-glwd-v2",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-wetlands/glwd/stac-collection.json",
+      "assets": [
+        {
+          "id": "glwd-main-class-cog",
+          "display_name": "Wetland Type (GLWD)",
+          "group": "Land Cover"
+        }
+      ]
+    },
+    {
+      "collection_id": "irrecoverable-carbon",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-carbon/stac-collection.json",
+      "assets": [
+        {
+          "id": "v2-vulnerable-2024-cog",
+          "display_name": "Vulnerable Carbon (2024)",
+          "group": "Carbon",
+          "legend_label": "Mg C / ha"
+        }
+      ]
+    },
+    {
+      "collection_id": "iucn-richness-2025",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-iucn/stac-collection.json",
+      "assets": [
+        {
+          "id": "combined-sr-cog",
+          "display_name": "Species Richness (All)",
+          "group": "Biodiversity",
+          "legend_label": "Species count"
+        },
+        {
+          "id": "amphibians-sr-cog",
+          "display_name": "Amphibian Richness",
+          "group": "Biodiversity",
+          "legend_label": "Species count"
+        },
+        {
+          "id": "birds-sr-cog",
+          "display_name": "Bird Richness",
+          "group": "Biodiversity",
+          "legend_label": "Species count"
+        },
+        {
+          "id": "mammals-sr-cog",
+          "display_name": "Mammal Richness",
+          "group": "Biodiversity",
+          "legend_label": "Species count"
+        },
+        {
+          "id": "reptiles-sr-cog",
+          "display_name": "Reptile Richness",
+          "group": "Biodiversity",
+          "legend_label": "Species count"
+        }
+      ]
+    },
+    {
+      "collection_id": "ncp-biodiversity-indicators",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-ncp/biodiversity-indicators/stac-collection.json",
+      "assets": [
+        {
+          "id": "ncp-biod-nathab-cog",
+          "display_name": "Biodiversity & Natural Habitat (NCP)",
+          "group": "Biodiversity",
+          "colormap": "viridis",
+          "rescale": "0,1",
+          "legend_label": "NCP Score"
+        }
+      ]
+    },
+    {
+      "collection_id": "hydrobasins-v1c",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-hydrobasins/stac-collection.json",
+      "assets": [
+        {
+          "id": "unified-pmtiles",
+          "display_name": "Watersheds (HydroBASINS L6)",
+          "group": "Boundaries",
+          "visible": false,
+          "tooltip_fields": [
+            "HYBAS_ID",
+            "SUB_AREA",
+            "UP_AREA"
+          ]
+        }
+      ]
+    },
+    {
+      "collection_id": "wwf-ecoregions-2017",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-ecoregion/wwf-ecoregions-2017/stac-collection.json",
+      "assets": [
+        {
+          "id": "ecoregion-pmtiles",
+          "display_name": "WWF Ecoregions",
+          "group": "Boundaries",
+          "visible": false,
+          "tooltip_fields": [
+            "ECO_NAME",
+            "BIOME_NAME",
+            "REALM"
+          ]
+        }
+      ]
+    },
+    {
+      "collection_id": "gbif-derived",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-gbif/stac-collection.json",
+      "assets": []
+    },
+    {
+      "collection_id": "inaturalist-ranges",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-inat/stac-collection.json",
+      "assets": []
+    },
+    {
+      "collection_id": "overture-divisions-countries-2026-02-18",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/countries/stac-collection.json",
+      "group": {
+        "name": "Administrative Boundaries",
+        "collapsed": true
+      },
+      "assets": [
+        {
+          "id": "countries-pmtiles",
+          "display_name": "Countries",
+          "visible": false
+        }
+      ]
+    },
+    {
+      "collection_id": "overture-divisions-regions-2026-02-18",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/regions/stac-collection.json",
+      "group": {
+        "name": "Administrative Boundaries",
+        "collapsed": true
+      },
+      "assets": [
+        {
+          "id": "regions-pmtiles",
+          "display_name": "Regions / States",
+          "visible": false
+        }
+      ]
+    },
+    {
+      "collection_id": "overture-divisions-counties-2026-02-18",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-overturemaps/2026-02-18.0/counties/stac-collection.json",
+      "group": {
+        "name": "Administrative Boundaries",
+        "collapsed": true
+      },
+      "assets": [
+        {
+          "id": "counties-pmtiles",
+          "display_name": "Counties",
+          "visible": false
+        }
+      ]
+    },
+    {
+      "collection_id": "mobi-species-richness-all",
+      "collection_url": "https://s3-west.nrp-nautilus.io/public-mobi/mobi-species-richness-all/stac-collection.json",
+      "assets": []
+    }
+  ],
+  "plugins": [
+    {
+      "url": "https://cdn.jsdelivr.net/gh/SchmidtDSE/glen@v4.0.0/core/plugins/mcp.js",
+      "options": {
+        "url": "https://duckdb-mcp.nrp-nautilus.io/mcp",
+        "prompt": "geospatial-analyst"
+      }
+    },
+    "https://cdn.jsdelivr.net/gh/SchmidtDSE/glen@v4.0.0/core/plugins/hex.js"
+  ]
 }
